@@ -1,0 +1,7 @@
+Arduino Pro alimenté par l'USB, liaison série
+
+SPI entre IMU et PRO
+
+LED branché en sortie du PWM (3), résistance 60ohm
+
+ArduIMU alimenté par le 5V du PRO

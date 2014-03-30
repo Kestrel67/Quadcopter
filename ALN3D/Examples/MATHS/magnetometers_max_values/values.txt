@@ -1,0 +1,5 @@
+Not scaled :
+xmin:-647	xmax:641	ymin:-661	ymax:562	zmin:-382	zmax:709
+
+Scaled :
+each * 0.92 (gauss = 1.3)

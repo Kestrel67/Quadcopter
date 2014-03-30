@@ -1,0 +1,40 @@
+#######################################
+# Syntax Coloring Map For ALN3D Library
+#######################################
+
+
+# KEYWORD1 or KEYWORD2 or LITERAL1
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+SPIMaster			KEYWORD1
+SPISlave			KEYWORD1
+MPU6000_Init	KEYWORD1
+HMC5883L_Init	KEYWORD1
+AP_init				KEYWORD1
+IMU_Init			KEYWORD1
+QuadPID				KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+SetMode						KEYWORD2
+Compute						KEYWORD2
+SetOutputLimits		KEYWORD2
+SetTunings				KEYWORD2
+SetDirection			KEYWORD2
+SetSamplePeriod		KEYWORD2
+GetKp							KEYWORD2
+GetKi							KEYWORD2
+GetKd							KEYWORD2
+GetMode						KEYWORD2
+GetDirection			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+
