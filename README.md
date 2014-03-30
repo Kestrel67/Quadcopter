@@ -1,4 +1,4 @@
-quadcopter
+Quadcopter
 ==========
 
 Dietrich Lucas (Kestrel)
