@@ -4,6 +4,8 @@ D3 Quadcopter
 Dietrich Lucas (Kestrel)
 **http://www.kestrel.fr/quadcopter**
 
+![D3 Quadcopter](http://www.kestrel.fr/infrarouges/data/quadcopter/a-P1000327.JPG "D3 Quadcopter")
+
 ###Software
 
 **ALN3D :**
