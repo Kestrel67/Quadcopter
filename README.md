@@ -27,8 +27,9 @@ Version 1.32
 
 ###D3 Group###
 
--Dantz Achille
--Dietrich Lucas
--Dussourd Nicolas
+- Dantz Achille (Communication, control, joystick)
+- Dietrich Lucas (Software, stabilization)
+- Dussourd Nicolas (Structure, Solidworks)
 
 ![D3 Quadcopter](http://www.kestrel.fr/infrarouges/data/quadcopter/a-P1000327.JPG "D3 Quadcopter")
+![D3 Quadcopter](http://www.kestrel.fr/infrarouges/data/quadcopter/a-P1000324.JPG "D3 Quadcopter")
