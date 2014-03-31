@@ -19,9 +19,9 @@ void update_rotation_matrix(float phi, float theta, float psi)
 	// les matrices des rotations sont dans l'autre sens cas plus que de déplacer le
 	// repère de l'angle alpha global il faut déplacer le repère terrestre de -alpha
 	fMatrix_t Mphi = {
-		{cos_phi, 0, sin_phi},
-		{0, 1, 0},
-	    {-sin_phi, 0, cos_phi}
+			{cos_phi, 0, sin_phi},
+			{0, 1, 0},
+			{-sin_phi, 0, cos_phi}
 	};
 
 	// theta
@@ -29,9 +29,9 @@ void update_rotation_matrix(float phi, float theta, float psi)
 	float sin_theta = sin(theta);
 
 	fMatrix_t Mtheta = {
-	  {1, 0, 0},
-	  {0, cos_theta, sin_theta},
-	  {0, -sin_theta, cos_theta}
+			{1, 0, 0},
+			{0, cos_theta, sin_theta},
+			{0, -sin_theta, cos_theta}
 	};
 
 	// psi
@@ -39,9 +39,9 @@ void update_rotation_matrix(float phi, float theta, float psi)
 	float sin_psi = sin(psi);
 
 	fMatrix_t Mpsi = {
-	  {cos_psi, -sin_psi, 0},
-	  {sin_psi, cos_psi, 0},
-	  {0, 0, 1}
+			{cos_psi, -sin_psi, 0},
+			{sin_psi, cos_psi, 0},
+			{0, 0, 1}
 	};
 
 	// matrice temporraire

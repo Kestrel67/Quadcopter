@@ -15,20 +15,10 @@
 #ifndef Communication_h
 #define Communication_h
 
-/**
- * récupère le Most Significant Bit d'un octet (8bits)
- */
-#define MSB(b) (b >> 7)
 
-/**
- * Récupère le reste de l'octet (les LSBs) (8bits)
- */
-#define LSBS(b) (b & (~(1<<7)))
-
-/**
- * Taille du buffer de la communication série, 64 octets
- */
-#define SERIAL_BUFFER_MAX_SIZE 64
+#define MSB(b) (b >> 7) // récupère le Most Significant Bit d'un octet (8bits)
+#define LSBS(b) (b & (~(1<<7))) // Récupère le reste de l'octet (les LSBs) (8bits)
+#define SERIAL_BUFFER_MAX_SIZE 64 // Taille du buffer de la communication série, 64 octets
 
 
 
@@ -77,15 +67,15 @@ void AP_ApplyMotorsThrottle(void);
 /*****  SERIAL  *****/
 /********************/
 
-#define SERIAL_CMD_FIRST_BIT 1
-#define SERIAL_PARAM_FIRST_BIT 0
-#define SERIAL_CMD_MAX_SIZE 63
+#define SERIAL_CMD_FIRST_BIT 1		// B10000000
+#define SERIAL_PARAM_FIRST_BIT 0 	// B00000001
+#define SERIAL_CMD_MAX_SIZE 63		// B01111110
 #define SERIAL_PARAM_MAX_SIZE 255
 #define SERIAL_CMD_OFFSET 1
 #define SERIAL_CMD_MASK B01111110
 #define SERIAL_PARAM_MSB_MASK B00000001
 
-#define SERIAL_BAUDRATE 9600
+#define SERIAL_BAUDRATE 9600 // baudrate
 
 /**
  *	ID du timer pour la fonction d'écoute du serial

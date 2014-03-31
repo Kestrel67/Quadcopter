@@ -11,10 +11,10 @@
 #define DEFAULT_ROLL_PITCH_I	1.0
 #define DEFAULT_ROLL_PITCH_D	0.6
 
-#define LIMIT_MIN 0
-#define LIMIT_MAX 1
+#define PID_IDX_LIMIT_MIN 0
+#define PID_IDX_LIMIT_MAX 1
 
-#define SAFETY_MAX_ANGLE 25
+#define SAFETY_MAX_ANGLE 25 // angle maximale avant arrêt d'urgence
 
 /**
  * rapports cycliques des moteurs MA, MB, MC, MD
