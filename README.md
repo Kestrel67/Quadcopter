@@ -8,7 +8,13 @@ Dietrich Lucas (Kestrel)
 
 **ALN3D :**
 
+Logiciel principal
 Version 1.32
+
+**APL (Arduino Pro Library) :**
+
+Logiciel de contrôle des moteurs
+Version 2.1
 
 ###Hardware :
 
