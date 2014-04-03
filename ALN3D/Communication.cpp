@@ -196,7 +196,7 @@ void serial_observer(void)
 }
 
 
-// formattage des données de vol (accel, angles, frequency, etc...)
+// XBEE formatage des données de vol (accel, angles, frequency, etc...)
 void send_serial_data(void)
 {
 	byte buffer[60];

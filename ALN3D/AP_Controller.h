@@ -7,9 +7,10 @@
 #ifndef AP_CONTROLLER_H_
 #define AP_CONTROLLER_H_
 
-#define DEFAULT_ROLL_PITCH_P	1.1 // maybe more 1.3
-#define DEFAULT_ROLL_PITCH_I	1.0
-#define DEFAULT_ROLL_PITCH_D	0.6
+// 1.1, 1.0, 0.6 		(1.3), X,  X
+#define KP 1.1
+#define KI 1.0
+#define KD 0.6
 
 #define PID_IDX_LIMIT_MIN 0
 #define PID_IDX_LIMIT_MAX 1

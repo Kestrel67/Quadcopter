@@ -105,13 +105,6 @@ void Normalize(void)
 	// on normalize le vecteur accélération
 	Vector_Normalize(Accel, NormalizedAccel);
 
-	// accélération subise par le drone
-	/*
-	AccelSuppressed[X] = Accel[X] - Gravity[X] * 9.81;
-	AccelSuppressed[Y] = Accel[Y] - Gravity[Y] * 9.81;
-	AccelSuppressed[Z] = Accel[Z] - Gravity[Z] * 9.81;
-	*/
-
 	// angles globaux (accel, gyros)
 	accel_delta_angle = Vectors_Angle(Accel, LastAcceleration); // norme variable
 	gyro_delta_angle = Vectors1_Angle(Gravity, LastGravity); // ||Gravity|| = ||LastGravity|| = 1

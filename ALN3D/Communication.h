@@ -150,8 +150,25 @@ void send_serial_command(Command_t cmd, Parameter_t param = 0, HardwareSerial *s
 void serial_observer(void);
 
 /**
- * Formate et envoies les données par xbee
+ * Xbee : Formate et envoies les données par xbee
+ *
+ *
+ * DATASHEET
  */
+/* TEMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;;;f phi; f theta; f psi; f altitude; frequency; CPU_use; cmd_received; cmd_sended; events; timers; events_overflows; warning; mu; checksum;;
+2				2				2				2						3						1					2						2						4					4				2									1			2				1
+
+=30 + 19 (;) = 49
+
+checksum = B11111111 & (phi ^ theta ^ ... ^ mu)
+
+angle = byte / 65535.0 * 360.0 (Achille)
+byte = angle / 360.0 * 65535.0 (Lucas)
+
+altitude = byte / 65535.0 * 5.0
+byte = altitude / 5.0 * 65535.0
+*/
 void send_serial_data(void);
 
 #endif

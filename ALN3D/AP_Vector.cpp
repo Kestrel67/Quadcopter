@@ -66,7 +66,7 @@ float Vector_Magnitude(Vector_t V)
 	return sqrt(V[X] * V[X] + V[Y] + V[Y] + V[Z] * V[Z]);
 }
 
-// magnitude = 1
+// V' = V / magnitude(V) => magnitude(V1) = 1
 void Vector_Normalize(fVector_t V)
 {
 	float magn = Vector_Magnitude(V);

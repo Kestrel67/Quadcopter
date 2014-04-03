@@ -12,11 +12,6 @@ DutyCycle_t MotorsLowerLimit[4] = {0, 0, 0, 0};
 
 DutyCycle_t MotorsHigherLimit[4] = {100, 100, 100, 100};
 
-// 1.1, 1.0, 0.6 		(1.3), X,  X
-#define KP 1.1
-#define KI 1.0
-#define KD 0.0
-
 float KpPitch = 	KP, 	KiPitch = 		KI, 	KdPitch = 		KD;
 float KpRoll = 		KP, 	KiRoll = 		KI, 	KdRoll = 		KD;
 float KpYaw = 		0.1, 	KiYaw = 		0.2, 	KdYaw = 		0.0;
@@ -40,18 +35,18 @@ void PID_Init(void)
 	// moteur A devant, contrôleur +
 	// moteur B derière, contrôleur -
 	PitchController.SetDirection(QUADPID_DIRECT);
-	PitchController.SetOutputLimits(PitchLimits[LIMIT_MIN], PitchLimits[LIMIT_MAX]);
+	PitchController.SetOutputLimits(PitchLimits[PID_IDX_LIMIT_MIN], PitchLimits[PID_IDX_LIMIT_MAX]);
 
 	// direct : roll + à gauche
 	// moteur C à droite, contrôleur +
 	// moteur D à gauche, contrôleur -
 	RollController.SetDirection(QUADPID_DIRECT);
-	RollController.SetOutputLimits(RollLimits[LIMIT_MIN], RollLimits[LIMIT_MAX]);
+	RollController.SetOutputLimits(RollLimits[PID_IDX_LIMIT_MIN], RollLimits[PID_IDX_LIMIT_MAX]);
 
 	// yaw, A, B sens trigo
 	// C, D sens horraire
 	YawController.SetDirection(QUADPID_DIRECT);
-	YawController.SetOutputLimits(YawLimits[LIMIT_MIN], YawLimits[LIMIT_MAX]);
+	YawController.SetOutputLimits(YawLimits[PID_IDX_LIMIT_MIN], YawLimits[PID_IDX_LIMIT_MAX]);
 }
 
 /**
