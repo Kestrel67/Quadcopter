@@ -9,7 +9,7 @@ Dietrich Lucas (Kestrel)
 **ALN3D :**
 
 Logiciel principal
-Version 1.32
+Version 1.33
 
 **APL (Arduino Pro Library) :**
 
