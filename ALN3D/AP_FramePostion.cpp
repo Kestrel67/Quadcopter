@@ -42,8 +42,11 @@ Angle_t phi;
 Angle_t theta;
 Angle_t psi;
 Angle_t Azimut;
+Angle_t CDelta;
 
 Distance_t Altitude;
+
+float RotationMatrix_Trace;
 
 void IMU_Init(void)
 {
@@ -94,8 +97,12 @@ void Normalize(void)
 	// on met à jour la matrice de rotation
 	update_rotation_matrix(IOmega[Y], IOmega[X], IOmega[Z]);
 
-	// on applique la matrice de rotation au vecteur virtuel de pesanteur Gravity
+	// on applique la matrice de rotation au vecteur virtuel de pesanteur Gravity et d'azimut
 	apply_rotation_matrix(Gravity);
+
+	// on calcule l'angle global
+	RotationMatrix_Trace = Matrix_Trace(RotMat);
+	CDelta = acos((RotationMatrix_Trace - 1) / 2);
 
 	// variables d'integrations à 0
 	IOmega[X] = IOmega[Y] = IOmega[Z] = 0;
@@ -103,15 +110,11 @@ void Normalize(void)
 	// on normalize le vecteur accélération
 	Vector_Normalize(Accel, NormalizedAccel);
 
-	// angles globaux (accel, gyros)
-	accel_delta_angle = Vectors_Angle(Accel, LastAcceleration); // norme variable
-	gyro_delta_angle = Vectors1_Angle(Gravity, LastGravity); // ||Gravity|| = ||LastGravity|| = 1
-
-	// filtre
+	// filtre probabiliste
 	AccelFilter = constrain(
-			1 	- 1.0 * abs(gyro_delta_angle * RAD_TO_DEG) 			// coeff 1.0
-				- 2.0 * abs(accel_delta_angle * RAD_TO_DEG)			// coeff 2.0
-				- 2.0 * Vector_Error_Sum(Accel, LastAcceleration)	// coeff 2.0
+			1	- 2.0 * Vector_Error_Sum(Accel, LastAcceleration)	// erreur angle précédant (accel)  	// 2.0
+				- 2.0 * abs(GRAVITY - Vector_Magnitude(Accel))		// erreur norme (accel)				// 1.0
+				- 3.0 * abs(CDelta) * RAD_TO_DEG							// angle de rotation global			// 2.0
 		, 0.0, 1.0);
 
 	// vérification du filtre

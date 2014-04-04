@@ -57,6 +57,12 @@ void Matrix_Transpose(fMatrix_t M, fMatrix_t Out)
 	}
 }
 
+// calcule la trace de la matrice M
+float Matrix_Trace(fMatrix_t M)
+{
+	return M[0][0] + M[1][1] + M[2][2];
+}
+
 // Vprime = M * V
 void Vector_Apply_Matrix(fMatrix_t M, fVector_t V, fVector_t Vprime)
 {

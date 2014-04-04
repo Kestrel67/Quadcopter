@@ -13,6 +13,12 @@ void _proc_dynamic_calculation(void)
 	Gyroscopes_Integration();
 	Normalize();
 	CheckAngles();
+
+	  Serial.print(millis() / 1000.0);
+	  Serial.print(";");
+	  Serial.print(phi * RAD_TO_DEG);
+	  Serial.print(";");
+	  Serial.println(theta * RAD_TO_DEG);
 }
 
 void _proc_azimut_calculation(void)
@@ -62,7 +68,6 @@ void _proc_com_in(void)
 	// current_cmd
 	// attached_param
 
-
 	switch (current_cmd)
 	{
 		// changement état du système
@@ -75,7 +80,21 @@ void _proc_com_in(void)
 void _proc_com_out(void)
 {
 	// data out
-	send_serial_data(); // formaté
+	//send_serial_data(); // formaté
+	return;
+	Serial.print("phi : ");
+	  Serial.print(phi * RAD_TO_DEG, 3);
+	  Serial.print("\t theta : ");
+	  Serial.print(theta * RAD_TO_DEG, 3);
+	  Serial.print("\t");
+	  Serial.print("altitude : ");
+	  Serial.print(distance);
+	  Serial.print("\t");
+	  Serial.print("freq : ");
+	  Serial.print(system_frequency);
+	  Serial.print("\t");
+
+	  DisplayMotorsThrottle();
 }
 
 void _proc_system(byte status)
@@ -109,4 +128,3 @@ void _proc_system(byte status)
 			break;
 	}
 }
-

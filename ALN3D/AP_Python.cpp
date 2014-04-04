@@ -36,6 +36,7 @@ void Python_Matrix_Display(Matrix_t M)
 {
 	Serial.print("Matrix(");
 	Serial.print("[");
+
 	for(uint8_t i = 0; i < 3; i++)
 	{
 		Serial.print("[");

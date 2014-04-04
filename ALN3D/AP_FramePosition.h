@@ -125,6 +125,11 @@ extern Angle_t theta;
 extern Angle_t psi;
 
 /**
+ * Angle global de rotation
+ */
+extern Angle_t CDelta;
+
+/**
  * Cap (azimut) (rad)
  */
 extern Angle_t Azimut;
@@ -144,6 +149,11 @@ extern Angle_t delta_psi_err;
  * Altitude avec le sol
  */
 extern Distance_t Altitude;
+
+/**
+ * Trace de la matrice de rotation
+ */
+extern float RotationMatrix_Trace;
 
 /**
  * Mise en place des fonctions de mesure dynamique

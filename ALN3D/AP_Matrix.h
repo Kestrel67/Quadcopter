@@ -29,6 +29,11 @@ void Vector_Apply_Matrix(fMatrix_t M, fVector_t V, fVector_t Vprime);
 void Matrix_Transpose(fMatrix_t M, fMatrix_t Out);
 
 /**
+ * On calcule la trace de la matrice de rotation
+ */
+float Matrix_Trace(fMatrix_t M);
+
+/**
  * On multiplie une matrice de rotation par un vecteur et on le retourne dans ce même vecteur
  */
 void Vector_Apply_Matrix(fMatrix_t M, fVector_t V);
