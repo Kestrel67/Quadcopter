@@ -13,10 +13,13 @@
 #define EVENT_PULSE_GENERATING 	MAX_EVENTS - 4	// HC-SR04 Pulse generating
 #define EVENT_HC_SR04_SAMPLE 	MAX_EVENTS - 5	// HC-SR04 trigger/sample du HC-SR04
 
-#define EVENT_GET_MPU6000			0	// Accel, Gyro
-#define EVENT_GET_HMC5883L			1	// Magn
-#define EVENT_COMPUTE_ANGLES		2	// normalize, angles
-#define EVENT_SERIAL_DISPLAY_DATA	3	// serial display
-#define EVENT_STABILISATION			4	// sustentation, asservissement du drone
+#define EVENT_DYNAMIC				0	// Accel, Gyro, angles, normalize
+#define EVENT_AZIMUT				1	// Magn, corrections
+#define EVENT_SERIAL_DATA_IN		2	// serial in
+#define EVENT_SERIAL_DATA_OUT		3	// serial out
+#define EVENT_PID_ROLL_PITCH		4
+#define EVENT_PID_ALTITUDE			5
+#define EVENT_LED_POSITION			6
+
 
 #endif /* EVENTS_H_ */

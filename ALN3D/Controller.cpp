@@ -6,49 +6,53 @@
 
 #include "ALN3D.h"
 
-void system_setup(bool author, bool synchronization, unsigned int serial_obs, Event_t altitude_data_event)
+byte system_status = SYS_PAUSE; // on / off
+
+void system_setup(bool author, bool synchronization)
 {
 	// on mesure la durée d'initialisation
 	setup_start();
-	// début initialisation
 
 	// mise en place des entrées/sorties
 	IO_init();
 
-	// led information
 	digitalWrite(EMBEDED_LED_RED, HIGH);
 
-	// SPI master
 	SPIMaster Master = SPIMaster();
-
-	// Serial Com
-	Serial.begin(SERIAL_BAUDRATE); // SERIAL_BAUDRATE
-
-	// gyro, accel
-	MPU6000_Init(&Master);
-
-	// SPI protocol with AP
+	Serial.begin(SERIAL_BAUDRATE); // debug 115200, flight: 9600
 	AP_init(&Master);
 
-	// I2C com and magn
-	HMC5883L_Init();
+	MPU6000_Init(&Master);	// accel, gyro
+	HMC5883L_Init();		// magn
+	initialize_hc_sr04(PWM0, FREQUENCY_SAMPLE_HC_SR04, EVENT_PID_ALTITUDE);	// altitude
 
-	// PID init (default : manual mode)
 	PID_Init();
-	PID_Manual();
+	PID_Manual();	// default
 
-	// HC-SR04 init
-	initialize_hc_sr04(PWM0, FREQUENCY_SAMPLE_HC_SR04, altitude_data_event);
+	phi_setpoint = theta_setpoint = psi_setpoint = 0;	// default setpoint
+	altitude_control = 50;
 
-	// analyser
-	set_CPU_analyser(FREQUENCY_CPU_ANALYSER);
+	set_CPU_analyser(FREQUENCY_CPU_ANALYSER);	// system nalyser
 
 	// serial observer
-	if (serial_obs != 0)
-		set_serial_observer(FREQUENCY_SERIAL_OBSERVER, serial_obs);
+	set_serial_observer(FREQUENCY_SERIAL_OBSERVER, EVENT_SERIAL_DATA_IN);
+
+	// events
+	register_event(EVENT_DYNAMIC, 			_proc_dynamic_calculation);
+	register_event(EVENT_PID_ROLL_PITCH, 	_proc_dynamic_angles_PID);
+	register_event(EVENT_PID_ALTITUDE, 		_proc_altitude);
+	register_event(EVENT_SERIAL_DATA_IN, 	_proc_com_in);
+	register_event(EVENT_SERIAL_DATA_OUT, 	_proc_com_out);
+	register_event(EVENT_LED_POSITION, 		update_position_leds);
+
+	// timers
+	add_timer(EVENT_DYNAMIC, FREQUENCY_DYNAMIC);
+	add_timer(EVENT_PID_ROLL_PITCH, FREQUENCY_PID_ROLL_PITCH);
+	add_timer(EVENT_SERIAL_DATA_OUT, FREQUENCY_SERIAL_DATA_OUT);
+	add_timer(EVENT_LED_POSITION, FREQUENCY_LED_POSITION);
 
 	// calibration des gyroscopes, accéléromètres
-	//IMU_Init();
+	IMU_Init();
 
 	// auteur
 	if (author)
@@ -58,23 +62,16 @@ void system_setup(bool author, bool synchronization, unsigned int serial_obs, Ev
 	if (synchronization)
 		AP_synchronization();
 
-	// blk off
+	// APL : blk off
 	AP_write(APL_REG_BLK, 0);
 
-	// effet : on fait clignoter les 2 leds pour indiquer le début du programme
-	for(uint8_t blk = 0; blk < 20; blk++)
-	{
-		digitalWrite(EMBEDED_LED_BLUE, blk & 1);
-		digitalWrite(EMBEDED_LED_RED, !(blk & 1));
-		delay(50);
-	}
+	// état initial des moteurs
+	AP_ApplyMotorsThrottle();
 
-	// we stop the 2 leds
-	digitalWrite(EMBEDED_LED_BLUE, LOW);
+	// red led
 	digitalWrite(EMBEDED_LED_RED, LOW);
 
-	// hardware timer (last function)
-	initialize_timers(FREQUENCY_SEQUENCER_TIMER);
+	initialize_timers(FREQUENCY_SEQUENCER_TIMER);	// MSTimer 2 : 1000Hz (last function)
 
 	// init end
 	setup_stop();
@@ -91,7 +88,7 @@ void system_loop()
 		// we execute the tasks
 		dequeue_loop();
 
-		// counter
+		// analyser counter
 		loop_counter++;
 	}
 }

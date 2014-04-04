@@ -84,7 +84,7 @@ void MotorsConstrains(void);
 /**
  * Contrôle de sécurité (angles)
  */
-void SafetyAnglesControl(void);
+void CheckAngles(void);
 
 /**
  * on affiche les paramètres throttle des moteurs (DEBUG)

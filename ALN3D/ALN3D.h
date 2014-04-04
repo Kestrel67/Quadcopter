@@ -67,6 +67,7 @@
 #include "CPU.h"
 #include "ArduIMU.h"
 #include "Warning.h"
+#include "Dev.h"
 
 #include "Events.h"
 #include "Frequencies.h"
@@ -89,7 +90,7 @@
 #include "AP_RotationMatrix.h"
 #include "AP_PID.h"
 #include "AP_FramePosition.h"
-#include "AP_FlightProcedures.h"
+#include "AP_Procedures.h"
 #include "AP_Controller.h"
 #include "AP_Python.h"
 

@@ -43,8 +43,6 @@ Angle_t theta;
 Angle_t psi;
 Angle_t Azimut;
 
-Angle_t GlobalGapAngle;
-
 Distance_t Altitude;
 
 void IMU_Init(void)
@@ -138,15 +136,6 @@ void Normalize(void)
 	// on calcule les angles
 	phi = atan2(-Gravity[X], -Gravity[Z]);
 	theta = atan2(-Gravity[Y], -Gravity[Z]);
-}
-
-// on calcul l'angle global
-void calculate_global_gap_angle(void)
-{
-	float phi1d2 = sqrt(phi);
-	float theta1d2 = sqrt(theta);
-
-	GlobalGapAngle = atan(phi1d2 * phi1d2 + theta1d2 * theta1d2);
 }
 
 // on met à jour les leds de position

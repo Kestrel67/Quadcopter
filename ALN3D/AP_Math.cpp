@@ -16,6 +16,14 @@ float toCircleScale(float x, float min, float max)
 	return 2 * ((x - min) / (max - min)) - 1;
 }
 
+Angle_t calculate_global_angle(Angle_t phi, Angle_t theta)
+{
+	float phi1d2 = sqrt(phi);
+	float theta1d2 = sqrt(theta);
+
+	return atan(phi1d2 * phi1d2 + theta1d2 * theta1d2);
+}
+
 void Euler_Angles(void)
 {
 	// optimisation

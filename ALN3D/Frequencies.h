@@ -44,9 +44,8 @@
  * Fréquences utiles :
  */
 #define FREQUENCY_SEQUENCER_TIMER		FREQUENCY_1000Hz	// Timer principale
-#define FREQUENCY_GET_MPU6000			FREQUENCY_50Hz		// Acquisition valeurs MPU6000
-#define FREQUENCY_GYRO_INTEGRATION 		FREQUENCY_50Hz		// Intégration des gyroscopes
-#define FREQUENCY_COMPUTE_ANGLES		FREQUENCY_50Hz		// matrice de rotation, angles, etc...
+
+#define FREQUENCY_DYNAMIC				FREQUENCY_50Hz		// acquisition, intégration, matrice de rotation, angles, etc...
 
 #define FREQUENCY_STABILIZATION			FREQUENCY_25Hz		// stabilisation
 
@@ -54,8 +53,17 @@
 #define FREQUENCY_SAMPLE_HC_SR04		FREQUENCY_2Hz		// Acquisition de l'altitude
 
 #define FREQUENCY_SERIAL_OBSERVER		FREQUENCY_25Hz 		// serial données entrantes
-#define FREQUENCY_SERIAL_DISPLAY_DATA	FREQUENCY_25Hz		// serial : données sortantes
+#define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes
 
 #define FREQUENCY_CPU_ANALYSER			FREQUENCY_10Hz		// Analyse système
+
+#define FREQUENCY_PID_ROLL_PITCH		FREQUENCY_25Hz		// 50Hz --> 25Hz
+#define FREQUENCY_PID_PITCH				FREQUENCY_PID_ROLL_PITCH	// pitch
+#define FREQUENCY_PID_ROLL				FREQUENCY_PID_ROLL_PITCH	// roll
+
+#define FREQUENCY_PID_YAW				FREQUENCY_10Hz		// 25Hz --> 10Hz
+#define FREQUENCY_PID_ALTITUDE			FREQUENCY_2Hz		// max 2Hz
+
+#define FREQUENCY_LED_POSITION			FREQUENCY_25Hz		// 24 Hz min
 
 #endif

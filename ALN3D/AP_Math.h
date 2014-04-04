@@ -46,6 +46,13 @@ float toScale(float x, float min, float max, float scaleMin, float scaleMax);
  */
 float toCircleScale(float x, float min, float max);
 
+/**
+ * Angle global
+ * @param Angle_t phi
+ * @param Angle_t theta
+ */
+Angle_t calculate_global_angle(Angle_t phi, Angle_t theta);
+
 /************************/
 /****** FUNCTIONS *******/
 /************************/

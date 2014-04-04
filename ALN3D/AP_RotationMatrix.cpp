@@ -16,8 +16,8 @@ void update_rotation_matrix(float phi, float theta, float psi)
 	float cos_phi = cos(phi); // optimisations
 	float sin_phi = sin(phi);
 
-	// les matrices des rotations sont dans l'autre sens cas plus que de déplacer le
-	// repère de l'angle alpha global il faut déplacer le repère terrestre de -alpha
+	// les matrices des rotations sont transposées car la rotation
+	// de RT par rapport à RQ est inverse de RQ par rapport à RT
 	fMatrix_t Mphi = {
 			{cos_phi, 0, sin_phi},
 			{0, 1, 0},
