@@ -7,25 +7,6 @@
 #ifndef ROTATIONMATRIX_H_
 #define ROTATIONMATRIX_H_
 
-/*
-Cartesian coordinate : (0, x, z, a)
-phi (pitch) : about Y, X to Z
-theta (roll): about X, Y to Z
-psi (yaw)   : about Z, Y to X
-
-        z
-       /|\
-        |
-        |
-        |
-      O |_ _ _ _ _\ x
-       /          /
-      /
-     /
-   |/_
-    y
-*/
-
 /**
  * Matrice de rotation global : phi * theta * psi
  */

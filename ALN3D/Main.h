@@ -4,8 +4,8 @@
  * @website http://www.kestrel.fr
  */
 
-#ifndef Controller_h
-#define Controller_h
+#ifndef Main_h
+#define Main_h
 
 /**
  * status du système
@@ -16,16 +16,17 @@ extern byte system_status;
  * Fonction de setup
  * author, synchro, serial_obs = EVENT_NULL
  */
-void system_setup(bool author = true, bool synchronization = true);
+void system_setup(bool author = true, bool synchronization = true, bool calibrate = false);
 
 /**
  *	Fonction de boucle
  */
 void system_loop();
 
-
-// on affiche les données de vol
-void SerialDisplayData(void);
+/**
+ * on change l'état du système
+ */
+void ChangeSystemStatus(byte status = SYS_PAUSE);
 
 
 #endif

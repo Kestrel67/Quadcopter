@@ -1,8 +1,7 @@
-/*
- * System.cpp
- *
- *  Created on: 13 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #include "ArduinoProLibrary.h"
@@ -40,13 +39,14 @@ void system_setup(bool synchronization)
 
 void system_loop(void)
 {
-	for(;;)
+	for(;;) // no-delay loop (! emergency, special case)
 	{
+		// system status
 		if (reg_updated(APL_REG_STATUS))
 			system_status = reg_read(APL_REG_STATUS);
 
 		// IMU mode
-		if (system_status == SYS_ON)
+		if (system_status == SYS_ON) // ON
 		{
 			turn_on(LED_GREEN);
 
@@ -55,18 +55,42 @@ void system_loop(void)
 			manage_imu_red_led();
 
 #if APL_SERIAL_DISPLAY == 1
-
-			// on affiche les valeurs des moteurs à une fréquence de 25Hz
-			if (millis() - last_serial_display > FREQUENCY_25Hz)
+			// on affiche les valeurs des moteurs
+			if (millis() - last_serial_display > APL_SERIAL_DISPLAY_FREQUENCY)
 			{
 				serial_display_motors_throttle();
 				last_serial_display = millis();
 			}
 #endif
 		}
-		else
+		else if (system_status == SYS_PAUSE) // PAUSE
 		{
 			system_pause();
+
+			manage_imu_red_led();
+
+#if APL_SERIAL_DISPLAY == 1
+			// on affiche un message d'attente
+			if (millis() - last_serial_display > APL_SERIAL_DISPLAY_FREQUENCY)
+			{
+				Serial.print("wait ... : ");
+				Serial.println(system_status);
+				last_serial_display = millis();
+			}
+#endif
+		}
+		else // EMERGENCY
+		{
+			system_emergency();
+
+#if APL_SERIAL_DISPLAY == 1
+			// erreur !
+			if (millis() - last_serial_display > APL_SERIAL_DISPLAY_FREQUENCY)
+			{
+				Serial.println("!!!!!!! emergency !!!!!!!");
+				last_serial_display = millis();
+			}
+#endif
 		}
 	}
 }
@@ -74,15 +98,17 @@ void system_loop(void)
 void system_pause(void)
 {
 	turn_off(LED_GREEN);
+	turn_off(LED_RED);
 
 	stop_motors();
+}
 
-#if APL_SERIAL_DISPLAY == 1
-	Serial.print("wait ... : ");
-	Serial.println(system_status);
-#endif
-
-	APL_delay(1000);
+void system_emergency(void)
+{
+	stop_motors();
+	APL_delay(40);
+	reverse(LED_RED);
+	turn_off(LED_GREEN);
 }
 
 void apply_motors_duty(void)
@@ -115,17 +141,15 @@ void manage_imu_red_led(void)
 			turn_off(LED_RED);
 			break;
 
-		// on
-		case BLK_LED_ON:
-			turn_on(LED_RED);
-			break;
-
 		// toggle = default
 		case BLK_LED_TOGGLE:
-		default:
-			digitalWrite(LED_RED, !digitalRead(LED_RED));
+			reverse(LED_RED);
 			break;
 
+		// on
+		case BLK_LED_ON:
+		default:
+			turn_on(LED_RED);
 		}
 	}
 }

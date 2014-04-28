@@ -40,6 +40,46 @@
 #define FREQUENCY_500Hz 	2 			// 500 calls / 1 sec
 #define FREQUENCY_1000Hz 	1 			// 1000 calls / 1sec
 
+
+#define PERIOD_1MS			1
+#define PERIOD_2MS			2
+#define PERIOD_3MS			3
+#define PERIOD_4MS			4
+#define PERIOD_5MS			5
+#define PERIOD_6MS			6
+#define PERIOD_7MS			7
+#define PERIOD_8MS			8
+#define PERIOD_9MS			9
+
+#define PERIOD_10MS			10
+#define PERIOD_15MS			15
+#define PERIOD_20MS			20
+#define PERIOD_25MS			25
+#define PERIOD_30MS			30
+#define PERIOD_40MS			40
+#define PERIOD_50MS			50
+#define PERIOD_60MS			60
+#define PERIOD_70MS			70
+#define PERIOD_75MS			75
+#define PERIOD_80MS			80
+#define PERIOD_85MS			85
+#define PERIOD_90MS			90
+
+#define PERIOD_100MS		100
+#define PERIOD_150MS		150
+#define PERIOD_200MS		200
+#define PERIOD_250MS		250
+#define PERIOD_300MS		300
+#define PERIOD_400MS		400
+#define PERIOD_500MS		500
+#define PERIOD_600MS		600
+#define PERIOD_700MS		700
+#define PERIOD_750MS		750
+#define PERIOD_800MS		800
+#define PERIOD_850MS		850
+#define PERIOD_900MS		900
+
+
 /**
  * Fréquences utiles :
  */
@@ -53,15 +93,15 @@
 #define FREQUENCY_SAMPLE_HC_SR04		FREQUENCY_2Hz		// Acquisition de l'altitude
 
 #define FREQUENCY_SERIAL_OBSERVER		FREQUENCY_25Hz 		// serial données entrantes
-#define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes
+#define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes // FREQUENCY_5Hz
 
 #define FREQUENCY_CPU_ANALYSER			FREQUENCY_10Hz		// Analyse système
 
 #define FREQUENCY_PID_ROLL_PITCH		FREQUENCY_25Hz		// 50Hz --> 25Hz
 #define FREQUENCY_PID_PITCH				FREQUENCY_PID_ROLL_PITCH	// pitch
 #define FREQUENCY_PID_ROLL				FREQUENCY_PID_ROLL_PITCH	// roll
+#define FREQUENCY_PID_YAW				FREQUENCY_25Hz		// 25Hz --> 10Hz
 
-#define FREQUENCY_PID_YAW				FREQUENCY_10Hz		// 25Hz --> 10Hz
 #define FREQUENCY_PID_ALTITUDE			FREQUENCY_2Hz		// max 2Hz
 
 #define FREQUENCY_LED_POSITION			FREQUENCY_25Hz		// 24 Hz min

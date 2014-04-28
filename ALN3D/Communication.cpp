@@ -91,14 +91,6 @@ byte AP_read(Reg_t reg)
 	return read;
 }
 
-// dc
-void AP_ApplyMotorsThrottle(void)
-{
-	// APL_REG_MOTORA, APL_REG_MOTORB, APL_REG_MOTORC, APL_REG_MOTORD
-	for(uint8_t motor = 0; motor < 4; motor++)
-		AP_write(motor, MotorsThrottle[motor]);
-}
-
 
 /********************/
 /*****  SERIAL  *****/
@@ -119,6 +111,8 @@ SSigned_t serial_buffer_size;
 unsigned int serial_new_data = 0;
 
 Event_t serial_new_data_event = EVENT_NULL;
+
+byte communication_status;
 
 void set_serial_observer(MilliSec_t serial_observer_period, Event_t ev)
 {
@@ -188,16 +182,24 @@ void serial_observer(void)
 		}
 		else
 		{
-			Serial.write(CMD_COM_ERROR);
+			//Serial.write(CMD_COM_ERROR);
 		}
 
 		serial_buffer_size--;
 	}
 }
 
+// DEBUG pas de formatage
+void send_serial_data_debug(HardwareSerial *ser)
+{
+	char buf[150];
+	sprintf(buf, "phi: %d  \ttheta: %d\talt: %d cm\tCPU Hz : %lu\tCPU use : %d \tev_ex: %lu\ttimers_ex: %lu\toverflow: %d", int(phi * RAD_TO_DEG), int(theta * RAD_TO_DEG), int(distance / 10.0), system_frequency, int(CPU_use), events_thrown, timers_expired, analyser_events_overflow);
+	ser->println(buf);
+}
+
 
 // XBEE formatage des données de vol (accel, angles, frequency, etc...)
-void send_serial_data(void)
+void send_serial_data_xbee(HardwareSerial *ser)
 {
 	byte buffer[60];
 
@@ -217,61 +219,57 @@ void send_serial_data(void)
 
 	// start
 	buffer[i++] = ';';
-	buffer[i++] = ';';
-	buffer[i++] = ';';
 
 	// phi
 	buffer[i++] = fphi >> 8;
 	buffer[i++] = fphi;
-	buffer[i++] = ';';
 
 	checksum ^= fphi;
 
 	// theta
 	buffer[i++] = ftheta >> 8;
 	buffer[i++] = ftheta;
-	buffer[i++] = ';';
 
 	checksum ^= ftheta;
 
 	// psi
 	buffer[i++] = fpsi >> 8;
 	buffer[i++] = fpsi;
-	buffer[i++] = ';';
 
 	checksum ^= fpsi;
 
 	// altitude
 	buffer[i++] = faltitude >> 8;
 	buffer[i++] = faltitude;
-	buffer[i++] = ';';
 
 	checksum ^= faltitude;
+
+	// motors
+	buffer[i++] = MotorsThrottle[MA];
+	buffer[i++] = MotorsThrottle[MB];
+	buffer[i++] = MotorsThrottle[MC];
+	buffer[i++] = MotorsThrottle[MD];
 
 	// frequency
 	buffer[i++] = system_frequency >> 16;
 	buffer[i++] = system_frequency >> 8;
 	buffer[i++] = system_frequency;
-	buffer[i++] = ';';
 
 	checksum ^= system_frequency;
 
 	// cpu_use
 	buffer[i++] = byte(CPU_use);
-	buffer[i++] = ';';
 
 	checksum ^= byte(CPU_use);
 
 	// cmd received, sended
 	buffer[i++] = received_commands >> 8;
 	buffer[i++] = received_commands;
-	buffer[i++] = ';';
 
 	checksum ^= received_commands;
 
 	buffer[i++] = sended_answers >> 8;
 	buffer[i++] = sended_answers;
-	buffer[i++] = ';';
 
 	checksum ^= sended_answers;
 
@@ -280,7 +278,6 @@ void send_serial_data(void)
 	buffer[i++] = events_thrown >> 16;
 	buffer[i++] = events_thrown >> 8;
 	buffer[i++] = events_thrown;
-	buffer[i++] = ';';
 
 	checksum ^= events_thrown;
 
@@ -289,41 +286,36 @@ void send_serial_data(void)
 	buffer[i++] = timers_expired >> 16;
 	buffer[i++] = timers_expired >> 8;
 	buffer[i++] = timers_expired;
-	buffer[i++] = ';';
 
 	checksum ^= timers_expired;
 
 	// events_overflows
 	buffer[i++] = analyser_events_overflow >> 8;
 	buffer[i++] = analyser_events_overflow;
-	buffer[i++] = ';';
 
 	checksum ^= analyser_events_overflow;
 
 	// warning
 	buffer[i++] = warning_level;
-	buffer[i++] = ';';
 
 	checksum ^= warning_level;
 
 	// mu : ratio = matrix update / accel corrections
 	buffer[i++] = 0;
 	buffer[i++] = 0;
-	buffer[i++] = ';';
 
 	checksum ^= 0;
 
-	// check sum
-	buffer[i++] = checksum;
+	// communication status
+	buffer[i++] = communication_status;
 
-	// end
-	buffer[i++] = ';';
-	buffer[i++] = ';';
+	// check sum
+	buffer[i++] = 128;
 
 	// on envoie
 	for (uint8_t j = 0; j < i; j++)
 	{
-		Serial.write(buffer[j]);
+		ser->write(buffer[j]);
 	}
 }
 

@@ -1,42 +1,37 @@
-/*
- * Constants.h
- *
- *  Created on: 13 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
-/**
- * Library identification
- */
+// Library identification
 #define _APL_ID_ 1
 #define _ARDUINO_PRO_LIBRARY_ID_CONSTANT 1
 
 /**
  * THROTTLE range mode, dynamique(0) | static(1)
  */
+#define ESC_THROTTLE_DYNAMIC_STATIC_MODE 1
+#define ESC_THROTTLE_RANGE_STATIC_MODE 0
+
 #define ESC_THROTTLE_RANGE_MODE 0
 
-/**
- * On affiche les infos, status, moteurs par voie série ou non (0)
- */
+// On affiche les infos, status, moteurs par voie série ou non (0)
 #define APL_SERIAL_DISPLAY 1
 
-/**
- * valeur maximale de MAX_REGISTERS (5 bits)
- */
+// fréquence d'affichage
+#define APL_SERIAL_DISPLAY_FREQUENCY	FREQUENCY_25Hz
+
+// valeur maximale de MAX_REGISTERS (5 bits)
 #define APL_MAX_REGISTERS_MAX_VALUE 32
 
-/**
- * Nombre de registres utilisés
- */
+// Nombre de registres utilisés
 #define APL_REGISTERS_USED 16
 
-/**
- * Serial baud rate
- */
+// Serial baud rate
 #define APL_DEFAULT_SERIAL_BAUDRATE 115200
 
 
@@ -53,13 +48,13 @@
 #define APL_REG_BLK	5 // led blink (verte)
 
 /**
- * différents statuts du système
+ * différents status du système
  */
 #define SYS_UNDEFINED 	0 // status indéfini
 #define SYS_CONFIG 		1 // système en mode configuration
-#define SYS_ON 			4 // système en fonctionnement normal
-#define SYS_PAUSE 		5 // système en pause
-#define SYS_EMERGENCY 	6 // système en état d'urgence
+#define SYS_ON 			2 // système en fonctionnement normal
+#define SYS_PAUSE 		3 // système en pause
+#define SYS_EMERGENCY 	4 // système en état d'urgence
 
 /**
  * états de la led

@@ -57,11 +57,6 @@ bool AP_write(Reg_t reg, byte value);
  */
 byte AP_read(Reg_t reg);
 
-/**
- * On envoie les rapports cycliques de chaque moteur au slave
- */
-void AP_ApplyMotorsThrottle(void);
-
 
 /********************/
 /*****  SERIAL  *****/
@@ -124,6 +119,17 @@ extern unsigned int serial_new_data;
 extern Event_t serial_new_data_event;
 
 /**
+ * Status de la communication :
+	CMD_COM_OK
+	CMD_COM_ERROR
+	CMD_COM_BUSY
+	CMD_COM_READY
+	CMD_COM_INCREASE_FREQ
+ *
+ */
+extern byte communication_status;
+
+/**
  *	On met en place la fonction d'écoute du serial et on met en place le timer
  *	une période de serial_observer_period en ms
  */
@@ -149,6 +155,13 @@ void send_serial_command(Command_t cmd, Parameter_t param = 0, HardwareSerial *s
  */
 void serial_observer(void);
 
+
+
+/**
+ * DEBUG
+ */
+void send_serial_data_debug(HardwareSerial *ser = &Serial);
+
 /**
  * Xbee : Formate et envoies les données par xbee
  *
@@ -169,6 +182,6 @@ byte = angle / 360.0 * 65535.0 (Lucas)
 altitude = byte / 65535.0 * 5.0
 byte = altitude / 5.0 * 65535.0
 */
-void send_serial_data(void);
+void send_serial_data_xbee(HardwareSerial *ser = &Serial);
 
 #endif

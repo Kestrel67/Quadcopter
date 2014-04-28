@@ -124,7 +124,7 @@ float Vectors1_Angle(fVector_t U, fVector_t V)
 	return acos(constrain(U[X] * V[X] + U[Y] * V[Y] + U[Z] * V[Z], -1.0, 1.0));
 }
 
-// V = U
+// V = U (U --> V)
 void Vector_Copy(fVector_t U, fVector_t V)
 {
 	for(uint8_t i = 0; i <3; i++)

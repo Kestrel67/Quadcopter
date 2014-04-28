@@ -68,6 +68,11 @@ void checkError(void);
 extern Distance_mm_t distance;
 
 /**
+ * Altitude extimée du drone (en m)
+ */
+extern Distance_t Altitude;
+
+/**
  * hc-sr04 trigger pin
  */
 extern Pin_t hc_trigger_pin;

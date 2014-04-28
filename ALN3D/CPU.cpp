@@ -24,6 +24,12 @@ void CPU_types_size(void)
 		Serial.print("long long int : ");
 		Serial.println(sizeof(long long int));
 
+		Serial.print("float : ");
+		Serial.println(sizeof(float));
+
+		Serial.print("double : ");
+		Serial.println(sizeof(double));
+
 		Serial.print("matrix (int) : ");
 		Serial.println(sizeof(Matrix_t));
 

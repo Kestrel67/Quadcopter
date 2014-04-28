@@ -62,6 +62,8 @@ void checkError(void)
  */
 Distance_mm_t distance;
 
+Distance_t Altitude;
+
 Pin_t hc_trigger_pin;
 
 Event_t altitude_new_data_event = EVENT_NULL;

@@ -1,8 +1,7 @@
-/*
- * Register.cpp
- *
- *  Created on: 14 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #include "ArduinoProLibrary.h"
@@ -30,11 +29,7 @@ byte reg_read(Reg_t reg)
 
 bool reg_updated(Reg_t reg)
 {
-	if (reg < APL_MAX_REGISTERS and REG_UPDATED[reg])
-	{
-		return true;
-	}
-	return false;
+	return (bool) (reg < APL_MAX_REGISTERS and REG_UPDATED[reg]);
 }
 
 void reg_debug(HardwareSerial *ser)

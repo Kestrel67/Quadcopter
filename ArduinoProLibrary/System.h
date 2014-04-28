@@ -1,9 +1,7 @@
-
-/*
- * System.h
- *
- *  Created on: 13 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #ifndef SYSTEM_H_
@@ -28,6 +26,11 @@ void system_loop(void);
  * Le système est en pause
  */
 void system_pause(void);
+
+/**
+ * le système est en état d'urgence
+ */
+void system_emergency(void);
 
 /**
  * On applique la rapport cyclique aux moteurs

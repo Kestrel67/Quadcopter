@@ -12,6 +12,9 @@ volatile uint8_t MPU6000_newdata;
 // corrections à apporter aux gyroscopes
 Vector_t Omega_Gap = {GYRO_X_GAP, GYRO_Y_GAP, GYRO_Z_GAP};
 
+// ||Gravity|| exp
+float average_gravity_magnitude;
+
 // temperature
 float temperature;
 
@@ -225,6 +228,9 @@ void MPU6000_Gyro_Calibration(void)
 	Omega_Gap[X] = - round(float(sum_x) / MPU6000_CALIBRATION_ITERATIONS);
 	Omega_Gap[Y] = - round(float(sum_y) / MPU6000_CALIBRATION_ITERATIONS);
 	Omega_Gap[Z] = - round(float(sum_z) / MPU6000_CALIBRATION_ITERATIONS);
+
+
+	Vector_Display(Omega_Gap);
 }
 
 void MPU6000_Format(char *buffer)

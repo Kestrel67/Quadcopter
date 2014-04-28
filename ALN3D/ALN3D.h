@@ -25,20 +25,53 @@
 #define ALN3D_h
 
 
+// IMU
+#define IMU_MODE_NORMAL		1
+#define IMU_MODE_FULL_GYRO  2
+
+#define IMU_MODE IMU_MODE_NORMAL // <==============================================================================
+
+
+// filters
+#define KALMAN_FILTER 1	// filtre de kalman
+#define COMPLEMENTARY_FILTER 2 // complementary filter
+#define PROBABILISTIC_FILTER 3 // complementary filter
+
+#define IMU_FILTER PROBABILISTIC_FILTER // filtre // <==============================================================================
+
+
+// command mode
+#define CMD_IN_DEV	1
+#define CMD_IN_PROD	2
+#define CMD_IN_MODE	CMD_IN_DEV
+
+// communication mode
+#define COM_VISUAL 1 // <:--
+#define COM_PYTHON 2
+#define COM_XBEE 3
+
+#define COM_MODE COM_PYTHON // <==============================================================================
+
+
 // analyser
-#define ANALYSER 1
+#define ANALYSER 1	// <==============================================================================
+
 
 // errors manager
 #define ERRORS_MANAGER 0
 
+
 // debug
-#define DEBUG_MODE 0
+#define DEBUG_MODE 0	// <==============================================================================
+
 
 // school, home
 #define BOARD1 1
 #define BOARD2 2
 
+
 #define ARDUIMU BOARD2
+
 
 // on vérifie qu'une application est active (analyser ou gestion des erreurs)
 #define enabled_backapp(app) (app == 1)
@@ -64,6 +97,7 @@
 // types, data, constants
 #include "Types.h"
 #include "Constants.h"
+#include "Symbols.h"
 #include "CPU.h"
 #include "ArduIMU.h"
 #include "Warning.h"
@@ -78,35 +112,38 @@
 #include "Timers.h"
 
 // com
-#include "IO.h"
 #include "SPIClasses.h"
 #include "Commands.h"
 #include "Communication.h"
 
 // maths / physic
+#include "Kalman.h"
 #include "AP_Math.h"
 #include "AP_Vector.h"
 #include "AP_Matrix.h"
 #include "AP_RotationMatrix.h"
 #include "AP_PID.h"
-#include "AP_FramePosition.h"
+#include "AP_IMU.h"
 #include "AP_Procedures.h"
 #include "AP_Controller.h"
 #include "AP_Python.h"
 
-// accel, gyron, magn
+// accel, gyro, magn
 #include <HMC5883L.h>
 #include "MPU6000.h"
 
 // timers
-#include "MsTimer2.h"
+#include <MsTimer2.h>
 #include "Timer1Counter.h"
 
 // sensors
 #include "Sensors.h"
+#include "Motors.h"
 
-// controller, analyseur
-#include "Controller.h"
+// programme principal
+#include "Main.h"
+
+// analyser
 #include "Analyser.h"
 
 

@@ -12,22 +12,22 @@
 int w_pointer = 0, r_pointer = 0;
 
 /**
- *	Nombre dévènement dans la file
+ *	Nombre dévènements dans la file
  */
 Tiny_t events_count = 0;
 
 /**
- *	Indique s'il y a une erreur sur la file
+ *	Indique s'il y a eu un overflow (file pleine)
  */
 bool events_overflow = false;
 
 /**
- *	Cache du buffer pour accélérer son déclenchement
+ *	Cache du buffer pour accélérer le déclenchement d'un évènement
  */
 Event_t event_cach = EVENT_NULL;
 
 /**
- *	@var callback_t array, tables associations [event => callback]
+ *	@var callback_t array, table d'associations [event => callback]
  */
 callback_t TCB[MAX_EVENTS];
 
@@ -47,7 +47,7 @@ int displayQueueN(Tiny_t n)
 }
 
 /**
- *	Indique s'il y a une erreur ou non
+ *	Indique s'il y a eu overflow ou non
  */
 bool getEventsError(void)
 {

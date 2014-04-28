@@ -1,10 +1,8 @@
-/*
-#if !defined(__AVR_ATmega32U4__)
-
-#error Arduino not supported (Arduino Pro only)
-
-#endif
-*/
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
+ */
 
 #ifndef OUTPUTCONTROLLER_H_
 #define OUTPUTCONTROLLER_H_

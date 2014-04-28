@@ -8,12 +8,12 @@
 
 float toScale(float x, float min, float max, float scaleMin, float scaleMax)
 {
-	return (scaleMax - scaleMin) * (x - min) / (max - min) + scaleMin;
+	return (scaleMax - scaleMin) * (x - min) / (max - min) + scaleMin; // eq.7
 }
 
 float toCircleScale(float x, float min, float max)
 {
-	return 2 * ((x - min) / (max - min)) - 1;
+	return 2 * ((x - min) / (max - min)) - 1; // eq.8
 }
 
 Angle_t calculate_global_angle(Angle_t phi, Angle_t theta)
@@ -36,8 +36,6 @@ void Euler_Angles(void)
 	theta = atan(Accel[Y] / sqrt(x2 + z2));
 
 	psi = atan(Accel[Z] / sqrt(x2 + y2));
-
-	acceleration_magnitude = sqrt(x2 + y2 + z2);
 }
 
 float Trig_Correction(float rad)
@@ -45,37 +43,6 @@ float Trig_Correction(float rad)
 	if (rad < 0)
 		return rad + 2 * M_PI;
 	return rad;
-}
-
-void Heading(void)
-{
-	HeadingYaw();
-	
-	Azimut = Trig_Correction(Azimut);
-}
-
-void HeadingYaw(void)
-{
-	// angle with de north
-	Azimut = atan2(Magn[Y], Magn[X]) + MAGNETIC_DECLINATION;
-}
-
-void HeadingPitch(void)
-{
-	// angle with de north
-	Azimut = atan2(Magn[X], Magn[Z]) + MAGNETIC_DECLINATION;
-}
-
-
-void HeadingRoll(void)
-{
-	// angle with de north
-	Azimut = atan2(Magn[Y], Magn[Z]) + MAGNETIC_DECLINATION;
-}
-
-void Heading_Tilt_Correction(void)
-{	
-	// ...
 }
 
 void Euler_Angles_Format(char *buffer)

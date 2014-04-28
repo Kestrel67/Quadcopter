@@ -6,7 +6,7 @@ void APL_delay(unsigned long time)
 
 	if (!(TCCR0B & (1<<WGM02)) & !(TCCR0A & (1<<WGM01)) & (TCCR0A & (1<<WGM00)))
 	{
-		while(millis() - current < time / 2);
+		while(millis() - current < time / 2.0);
 	}
 	else
 	{
@@ -22,4 +22,9 @@ void turn_on(Pin_t led)
 void turn_off(Pin_t led)
 {
 	digitalWrite(led, HIGH);
+}
+
+void reverse(Pin_t led)
+{
+	digitalWrite(led, !digitalRead(led));
 }

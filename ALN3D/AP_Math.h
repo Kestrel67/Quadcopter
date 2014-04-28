@@ -16,14 +16,6 @@
  */
 #define sign(n) (n / abs(n))
 
-
-/**
- * vector access constants
- */
-#define X 0
-#define Y 1
-#define Z 2
-
 /**
  *	Convert the value x from range [min, max] to range [scaleMin, scaleMax]
  *	@param float x : Value to convert
@@ -66,46 +58,6 @@ Angle_t calculate_global_angle(Angle_t phi, Angle_t theta);
  *	psi : angle between the yaw axis and the plan (orthogonal to gravity vector)
  */
 void Euler_Angles(void);
-
-/**
- * Euler phi angle
- */
-float phi_angle(float x, float y, float z);
-
-/**
- * Euler theta angle
- */
-float theta_angle(float x, float y, float z);
-
-/**
- * Euler psi angle
- */
-float psi_angle(float x, float y, float z);
-
-
-/************************/
-/******** AZIMUT ********/
-/************************/
-
-/**
- *	Calculate Heading with Magnetic north, arround Yaw (Z axis, default)
- *	save in heading
- */
-void Heading(void);
-
-/** ... Yaw Z axis  = Heading */
-void HeadingYaw(void);
-
-/** ... Pitch Y axis */
-void HeadingPitch(void);
-
-/** ... Roll X axis */
-void HeadingRoll(void);
-
-/**
- *	Calculate Heading with Magnetic north from Euler Angles
- */
-void Heading_Tilt_Correction(void);
 
 
 /************************/

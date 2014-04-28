@@ -6,18 +6,12 @@
 
 #include "ALN3D.h"
 
-DutyCycle_t MotorsThrottle[4] = {0, 0, 0, 0};
-
-DutyCycle_t MotorsLowerLimit[4] = {0, 0, 0, 0};
-
-DutyCycle_t MotorsHigherLimit[4] = {100, 100, 100, 100};
-
 float KpPitch = 	KP, 	KiPitch = 		KI, 	KdPitch = 		KD;
 float KpRoll = 		KP, 	KiRoll = 		KI, 	KdRoll = 		KD;
 float KpYaw = 		0.1, 	KiYaw = 		0.2, 	KdYaw = 		0.0;
 float KpAltitude = 	0.2, 	KiAltitude = 	0.2, 	KdAltitude = 	0.0;
 
-int PitchLimits[2] = {-100, 100}, RollLimits[2] = {-100, 100}, YawLimits[2] = {-10, 10}, AltitudeLimits[2] = {0, 50};
+int PitchLimits[2] = {-50, 50}, RollLimits[2] = {-50, 50}, YawLimits[2] = {-10, 10}, AltitudeLimits[2] = {0, 50};
 
 float phi_in, 				theta_in, 				psi_in, 				altitude_in;
 float phi_setpoint = 0, 	theta_setpoint = 0, 	psi_setpoint = 0, 		altitude_setpoint = 0;
@@ -28,7 +22,7 @@ QuadPID RollController		(KpRoll, 	KiRoll, 	KdRoll, 		&theta_in, 	&theta_control,
 QuadPID YawController		(KpYaw, 	KiYaw, 		KdYaw, 			&psi_in, 	&psi_control, 		&psi_setpoint);
 QuadPID AltitudeController(KpAltitude, 	KiAltitude, KdAltitude, 	&altitude_in, &altitude_control, &altitude_setpoint);
 
-// intialisation du PID
+// initialisation du PID
 void PID_Init(void)
 {
 	// direct : pitch + le nez pointe le ciel, - quand il pique
@@ -52,9 +46,25 @@ void PID_Init(void)
 	YawController.SetOutputLimits(YawLimits[PID_IDX_LIMIT_MIN], YawLimits[PID_IDX_LIMIT_MAX]);
 
 	// altitude
-	AltitudeController.SetDirection(QUADPID_DIRECT);
-	YawController.SetOutputLimits(AltitudeLimits[PID_IDX_LIMIT_MIN], AltitudeLimits[PID_IDX_LIMIT_MAX]);
 	AltitudeController.SetSamplePeriod(FREQUENCY_PID_ALTITUDE);
+	AltitudeController.SetDirection(QUADPID_DIRECT);
+	AltitudeController.SetOutputLimits(AltitudeLimits[PID_IDX_LIMIT_MIN], AltitudeLimits[PID_IDX_LIMIT_MAX]);
+
+	// infos
+	/* ? */
+	/*
+	PitchController.info();
+	RollController.info();
+	YawController.info();
+	AltitudeController.info();
+	*/
+	/* ? */
+
+	/** setpoints **/
+	phi_setpoint, theta_setpoint, psi_setpoint = 0;
+
+	psi_control = 0;
+	altitude_control = 50;
 }
 
 /**
@@ -84,46 +94,26 @@ void PIDCompute(void)
 {
 	PitchController.Compute();
 	RollController.Compute();
-	YawController.Compute();
-	AltitudeController.Compute();
+	//YawController.Compute();
+	//AltitudeController.Compute();
 
-	MotorsThrottle[MA] = altitude_control + phi_control + psi_control;
-	MotorsThrottle[MB] = altitude_control - phi_control + psi_control;
+	MotorsThrottle[MA] = altitude_control + phi_control + psi_control;	// (eq.9a)
+	MotorsThrottle[MB] = altitude_control - phi_control + psi_control; // (eq.9b)
 
-	MotorsThrottle[MC] = altitude_control + theta_control - psi_control;
-	MotorsThrottle[MD] = altitude_control - theta_control - psi_control;
+	MotorsThrottle[MC] = altitude_control + theta_control - psi_control; // (eq.9c)
+	MotorsThrottle[MD] = altitude_control - theta_control - psi_control; // (eq.9d)
 }
 
-// on applique contraintes de DC
-void MotorsConstrains(void)
+
+// on affiche les commandes PID
+void DisplayPIDControl(HardwareSerial *ser)
 {
-	for(uint8_t motor = 0; motor < 4; motor++)
-		MotorsThrottle[motor] = constrain(MotorsThrottle[motor], MotorsLowerLimit[motor], MotorsHigherLimit[motor]);
-}
-
-// sécurité
-void CheckAngles(void)
-{
-	// état d'urgence
-	if (abs(phi_in) > SAFETY_MAX_ANGLE || abs(theta_in) > SAFETY_MAX_ANGLE) {
-
-		// on met le système en état d'urgence => on coupe les moteurs
-		_proc_system(SYS_EMERGENCY);
-
-	} else {
-		// AP_write(APL_REG_BLK, 0);
-	}
-}
-
-// on affiche les paramètres throttle
-void DisplayMotorsThrottle(HardwareSerial *ser)
-{
-  for (uint8_t i = 0; i < 4; i++)
-  {
-     ser->write(65 + i);
-     ser->print(" : ");
-     ser->print(MotorsThrottle[i]);
-     ser->print("\t");
-  }
-  ser->println();
+	ser->print("phi : ");
+	ser->print(phi_control);
+	ser->print("\t theta : ");
+	ser->print(theta_control);
+	ser->print("\t psi : ");
+	ser->print(psi_control);
+	ser->print("\t altitude : ");
+	ser->print(altitude_control);
 }

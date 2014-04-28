@@ -1,8 +1,7 @@
-/*
- * Motors.h
- *
- *  Created on: 27 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #ifndef MOTORS_H_
@@ -95,13 +94,6 @@
 
 #define ESC_D_MIN 149
 #define ESC_D_MAX 214
-
-/**
- * Mode de range, dynamique ou statique
- */
-#define ESC_THROTTLE_DYNAMIC_STATIC_MODE 1
-#define ESC_THROTTLE_RANGE_STATIC_MODE 0
-
 
 /**
  * Mise en place des ESC, initialisation et mise en place pour démarrage

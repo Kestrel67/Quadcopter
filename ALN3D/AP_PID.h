@@ -25,7 +25,7 @@
 class QuadPID
 {
 public:
-	MilliSec_t SamplePeriod;
+	MilliSec_t SamplePeriod, DefaultSamplePeriod;
 	float *Input, *Output, *Setpoint;
 	float LastInput, Iterm;
 	float Kp, Ki, Kd;
@@ -83,6 +83,11 @@ public:
 	float GetKd(void) const;
 	bool GetMode(void) const;
 	bool GetDirection(void) const;
+
+	/**
+	 * Information sur le PID
+	 */
+	void info(HardwareSerial *ser = &Serial);
 
 };
 #endif

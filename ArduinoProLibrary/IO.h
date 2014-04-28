@@ -1,8 +1,7 @@
-/*
- * IO.h
- *
- *  Created on: 13 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #ifndef IO_H_

@@ -48,6 +48,7 @@ void update_rotation_matrix(float phi, float theta, float psi)
 	fMatrix_t Mtemp;
 
 	// ordre de multiplication tranposé : (Mphi * Mtheta * Mpsi)T = (Mpsi T * Mtheta T) * Mphi T
+	// eq.2
 	Matrix_Multiply(Mpsi, Mtheta, Mtemp);
 	Matrix_Multiply(Mtemp, Mphi, RotMat);
 }

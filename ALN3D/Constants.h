@@ -15,9 +15,19 @@
 #define MPU6000_CALIBRATION_DELAY 10		// délai entre chaque
 
 // default gyroscopes drift correction
+#if ARDUIMU == BOARD1
+
 #define GYRO_X_GAP 93
 #define GYRO_Y_GAP 7
 #define GYRO_Z_GAP -8
+
+#else
+
+#define GYRO_X_GAP 13
+#define GYRO_Y_GAP 4
+#define GYRO_Z_GAP -2
+
+#endif
 
 // temperature correction (°)
 #define TEMPERATURE_GAP 0

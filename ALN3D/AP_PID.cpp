@@ -16,7 +16,7 @@ QuadPID::QuadPID(float kp, float ki, float kd, float *input, float *output, floa
 	Setpoint = setpoint;
 
 	// période de calcule par défaut 50Hz : 20ms
-	SamplePeriod = FREQUENCY_50Hz;
+	DefaultSamplePeriod = SamplePeriod = sample_period;
 
 	// mode automatique (par défaut)
 	Mode = QUADPID_AUTOMATIC;
@@ -33,9 +33,12 @@ void QuadPID::SetTunings(float kp, float ki, float kd)
 	// > 0
 	if (kp < 0 || ki < 0 || kd < 0) return;
 
+	// en fonction de la période de calcul
+	float ratio = ((float) DefaultSamplePeriod / (float) SamplePeriod);
+
 	Kp = kp;
-	Ki = ki;
-	Kd = kd;
+	Ki = ki * ratio;
+	Kd = kd / ratio;
 
 	// si le sens est inversé on inverse Kp, Ki, Kd
 	if(Direction == QUADPID_REVERSE)
@@ -139,3 +142,22 @@ float QuadPID::GetKi(void) const { return Ki; }
 float QuadPID::GetKd(void) const { return Kd; }
 bool QuadPID::GetMode(void) const { return Mode; }
 bool QuadPID::GetDirection(void) const { return Direction; }
+
+// info sur le PID
+void QuadPID::info(HardwareSerial *ser)
+{
+	ser->print("PID : Kp, Ki, Kd : ");
+	ser->print(Kp);
+	ser->print(", ");
+	ser->print(Ki);
+	ser->print(", ");
+	ser->print(Kd);
+	ser->print("\t sample rate : ");
+	ser->print(SamplePeriod);
+	ser->print("\t Limits : ");
+	ser->print(OutMin);
+	ser->print(", ");
+	ser->print(OutMax);
+	ser->print("\t Direction : ");
+	ser->println(Direction);
+}

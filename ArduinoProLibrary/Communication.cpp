@@ -1,8 +1,7 @@
-/*
- * Communication.cpp
- *
- *  Created on: 14 janv. 2014
- *      Author: Lucas
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
  */
 
 #include "ArduinoProLibrary.h"
@@ -18,6 +17,10 @@ void SPI_synchronization(void)
 		digitalWrite(LED_RED, !digitalRead(LED_RED));
 		delay(50);
 	}
+
+	// out
+	system_status = reg_read(APL_REG_STATUS);
+
 	// led off
 	digitalWrite(LED_RED, HIGH);
 }

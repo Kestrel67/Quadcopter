@@ -21,5 +21,8 @@
 #define EVENT_PID_ALTITUDE			5
 #define EVENT_LED_POSITION			6
 
+#define EVENT_HMC5883L				7
+#define EVENT_MPU6000				8
+
 
 #endif /* EVENTS_H_ */

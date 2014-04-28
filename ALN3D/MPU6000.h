@@ -37,6 +37,11 @@
 extern Vector_t Omega_Gap;
 
 /**
+ * Norme moyenne du vecteur gravité de pesanteur val --> 9.81 (~~)
+ */
+extern float average_gravity_magnitude;
+
+/**
  *	Température en degrée Celcius °C
  */
 extern float temperature;

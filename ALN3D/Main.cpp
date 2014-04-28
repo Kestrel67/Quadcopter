@@ -8,13 +8,14 @@
 
 byte system_status = SYS_PAUSE; // on / off
 
-void system_setup(bool author, bool synchronization)
+void system_setup(bool author, bool synchronization, bool calibrate)
 {
 	// on mesure la durée d'initialisation
 	setup_start();
 
-	// mise en place des entrées/sorties
-	IO_init();
+	// leds
+	pinMode(EMBEDED_LED_RED, OUTPUT);
+	pinMode(EMBEDED_LED_BLUE, OUTPUT);
 
 	digitalWrite(EMBEDED_LED_RED, HIGH);
 
@@ -29,30 +30,31 @@ void system_setup(bool author, bool synchronization)
 	PID_Init();
 	PID_Manual();	// default
 
-	phi_setpoint = theta_setpoint = psi_setpoint = 0;	// default setpoint
-	altitude_control = 50;
+	set_CPU_analyser(FREQUENCY_CPU_ANALYSER);	// system analyser
 
-	set_CPU_analyser(FREQUENCY_CPU_ANALYSER);	// system nalyser
-
-	// serial observer
+	// serial command (com in) observer
+	#if CMD_IN_MODE == CMD_IN_PROD
 	set_serial_observer(FREQUENCY_SERIAL_OBSERVER, EVENT_SERIAL_DATA_IN);
+	#else
+	add_timer(EVENT_SERIAL_DATA_IN, FREQUENCY_SERIAL_OBSERVER);
+	#endif
 
 	// events
 	register_event(EVENT_DYNAMIC, 			_proc_dynamic_calculation);
 	register_event(EVENT_PID_ROLL_PITCH, 	_proc_dynamic_angles_PID);
-	register_event(EVENT_PID_ALTITUDE, 		_proc_altitude);
-	register_event(EVENT_SERIAL_DATA_IN, 	_proc_com_in);
+	register_event(EVENT_PID_ALTITUDE, 		callback_pid_altitude);
+	register_event(EVENT_SERIAL_DATA_IN, 	callback_ser_data_in);
 	register_event(EVENT_SERIAL_DATA_OUT, 	_proc_com_out);
 	register_event(EVENT_LED_POSITION, 		update_position_leds);
 
 	// timers
-	add_timer(EVENT_DYNAMIC, FREQUENCY_DYNAMIC);
-	add_timer(EVENT_PID_ROLL_PITCH, FREQUENCY_PID_ROLL_PITCH);
-	add_timer(EVENT_SERIAL_DATA_OUT, FREQUENCY_SERIAL_DATA_OUT);
-	add_timer(EVENT_LED_POSITION, FREQUENCY_LED_POSITION);
+	add_timer(EVENT_DYNAMIC, 			FREQUENCY_DYNAMIC);
+	add_timer(EVENT_PID_ROLL_PITCH, 	FREQUENCY_PID_ROLL_PITCH);
+	add_timer(EVENT_SERIAL_DATA_OUT, 	FREQUENCY_SERIAL_DATA_OUT);
+	add_timer(EVENT_LED_POSITION, 		FREQUENCY_LED_POSITION);
 
 	// calibration des gyroscopes, accéléromètres
-	IMU_Init();
+	IMU_Init(calibrate);
 
 	// auteur
 	if (author)
@@ -62,11 +64,11 @@ void system_setup(bool author, bool synchronization)
 	if (synchronization)
 		AP_synchronization();
 
-	// APL : blk off
+	// APL : blk off (previous reset)
 	AP_write(APL_REG_BLK, 0);
 
 	// état initial des moteurs
-	AP_ApplyMotorsThrottle();
+	ApplyMotorsThrottle();
 
 	// red led
 	digitalWrite(EMBEDED_LED_RED, LOW);
@@ -88,14 +90,45 @@ void system_loop()
 		// we execute the tasks
 		dequeue_loop();
 
+#if enabled_backapp(ANALYSER)
+
 		// analyser counter
 		loop_counter++;
+
+#endif
+
 	}
 }
 
-void SerialDisplayData(void)
+void ChangeSystemStatus(byte status)
 {
-	char buf[150];
-	sprintf(buf, "phi: %d  \ttheta: %d\talt: %d cm\tCPU : %lu\tev_ex: %lu\ttimers_ex: %lu\toverflow: %d", int(phi * RAD_TO_DEG), int(theta * RAD_TO_DEG), int(distance / 10.0), system_frequency, events_thrown, timers_expired, analyser_events_overflow);
-	Serial.println(buf);
+	switch(status)
+	{
+		// on
+		case SYS_ON:
+			AP_write(APL_REG_STATUS, SYS_ON);
+			AP_write(APL_REG_BLK, 0);
+			PID_Automatic();
+			system_status = status;
+			break;
+
+		// pause / config / init
+		case SYS_PAUSE:
+			AP_write(APL_REG_STATUS, SYS_PAUSE);
+			PID_Manual();
+			system_status = status;
+			break;
+
+		// error, emergency
+		case SYS_EMERGENCY:
+			AP_write(APL_REG_STATUS, SYS_EMERGENCY);
+			AP_write(APL_REG_BLK, 255);
+			PID_Manual();
+			system_status = status;
+			break;
+
+		default:
+			// error
+			break;
+	}
 }

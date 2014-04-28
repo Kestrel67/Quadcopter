@@ -16,5 +16,5 @@ void new_error(void)
 {
 	warning_errors++;
 
-	warning_level = (int) log(warning_errors);
+	warning_level = (int) log(warning_errors + 1);
 }

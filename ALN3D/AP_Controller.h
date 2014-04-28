@@ -7,24 +7,14 @@
 #ifndef AP_CONTROLLER_H_
 #define AP_CONTROLLER_H_
 
-// 1.1, 1.0, 0.6 		(1.3), X,  X
-#define KP 1.1
-#define KI 1.0
-#define KD 0.6
+// 1.1, 	1.0, 	0.6 		(1.3), X,  X
+// 1.75 	0.5 	0.45
+#define KP 1.0
+#define KI 0.6 // 0.5
+#define KD 0.3
 
 #define PID_IDX_LIMIT_MIN 0
 #define PID_IDX_LIMIT_MAX 1
-
-#define SAFETY_MAX_ANGLE 25 // angle maximale avant arrêt d'urgence
-
-/**
- * rapports cycliques des moteurs MA, MB, MC, MD
- */
-extern DutyCycle_t MotorsThrottle[4];
-
-// limites maximales et minimales des moteurs
-extern DutyCycle_t MotorsLowerLimit[4];
-extern DutyCycle_t MotorsHigherLimit[4];
 
 // PID pitch
 extern float KpPitch, KiPitch, KdPitch;
@@ -77,18 +67,8 @@ void PID_Manual(void);
 void PID_Automatic(void);
 
 /**
- * On applique les contraintes de DC
+ * On affiche les ocmmandes PID
  */
-void MotorsConstrains(void);
-
-/**
- * Contrôle de sécurité (angles)
- */
-void CheckAngles(void);
-
-/**
- * on affiche les paramètres throttle des moteurs (DEBUG)
- */
-void DisplayMotorsThrottle(HardwareSerial *ser = &Serial);
+void DisplayPIDControl(HardwareSerial *ser = &Serial);
 
 #endif

@@ -1,3 +1,9 @@
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
+ */
+
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
@@ -16,5 +22,10 @@ void APL_delay(unsigned long time);
  */
 void turn_on(Pin_t led);
 void turn_off(Pin_t led);
+
+/**
+ * On inverse l'état de la led
+ */
+void reverse(Pin_t led);
 
 #endif

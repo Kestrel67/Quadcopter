@@ -19,6 +19,11 @@ typedef uint8_t Pin_t;
 typedef uint8_t DutyCycle_t;
 
 /**
+ * Rapport cyclique étendus pour éviter les erreurs
+ */
+typedef int iDutyCycle_t;
+
+/**
  * Fréquence basse ~~ 65kHz
  */
 typedef unsigned int LowFrequency;
