@@ -318,6 +318,3 @@ void send_serial_data_xbee(HardwareSerial *ser)
 		ser->write(buffer[j]);
 	}
 }
-
-
-

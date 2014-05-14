@@ -16,7 +16,7 @@ extern byte system_status;
  * Fonction de setup
  * author, synchro, serial_obs = EVENT_NULL
  */
-void system_setup(bool author = true, bool synchronization = true, bool calibrate = false);
+void system_setup(bool conf = true, bool synchronization = true, bool calibrate = false, bool analyser = true, bool manager = false);
 
 /**
  *	Fonction de boucle

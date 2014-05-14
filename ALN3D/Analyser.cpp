@@ -6,13 +6,13 @@
 
 #include <ALN3D.h>
 
-volatile Counter_t loop_counter;
+Counter_t loop_counter;
 
 MilliSec_t setup_start_stop;
 
 LongMicroSec_t loop_last_measurement;
 
-volatile HighFrequency system_frequency;
+HighFrequency system_frequency;
 
 unsigned int sended_answers;
 
@@ -47,14 +47,14 @@ void loop_start()
 	loop_last_measurement = micros();
 }
 
-void set_CPU_analyser(MilliSec_t period)
+void set_CPU_Analyser(MilliSec_t period)
 {
-	register_event(EVENT_ANALYSER, CPU_analyser);
+	register_event(EVENT_ANALYSER, CPU_Analyser);
 
 	add_timer(EVENT_ANALYSER, period);
 }
 
-void CPU_analyser(void)
+void CPU_Analyser(void)
 {
 	// diff de temps (µs)
 	unsigned long period = (micros() - loop_last_measurement);
@@ -72,6 +72,8 @@ void CPU_analyser(void)
 	busy_time = 0;
 
 	// contraite (%)
+	/*
 	if (CPU_use > 100)
 		CPU_use = 100.0;
+	*/
 }

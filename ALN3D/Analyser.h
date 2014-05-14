@@ -34,7 +34,7 @@
 /**
  * nombre d'itérations de la boucle principale depuis la dernière analyse
  */
-extern volatile Counter_t loop_counter;
+extern Counter_t loop_counter;
 
 /**
  * Temps processeur de fin de la fonction d'initialisation
@@ -49,7 +49,7 @@ extern LongMicroSec_t loop_last_measurement;
 /**
  * Fréquence d'éxécution de la boucle principale
  */
-extern volatile HighFrequency system_frequency;
+extern HighFrequency system_frequency;
 
 /**
  * Pourcentage d'utilisation CPU
@@ -119,12 +119,12 @@ void loop_start();
 /**
  * mise en place de la fonction d'analyse
  */
-void set_CPU_analyser(MilliSec_t period = FREQUENCY_5Hz);
+void set_CPU_Analyser(MilliSec_t period = FREQUENCY_ANALYSER);
 
 /**
  * Callback de l'analyseur
  */
-void CPU_analyser(void);
+void CPU_Analyser(void);
 
 #endif
 

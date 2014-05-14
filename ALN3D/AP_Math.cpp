@@ -45,7 +45,25 @@ float Trig_Correction(float rad)
 	return rad;
 }
 
-void Euler_Angles_Format(char *buffer)
+/**
+ * Low Pass Filter : Remove high-frequencies (Smooth)
+ * @param alpha : coeff
+ * @param In : input value
+ * @param *S : Last Smoothed value
+ */
+float LowPassFilter(float alpha, float In, float S)
 {
-	sprintf(buffer, "phi:%d\ttheta:%d  \tpsi:%d", int(phi * RAD_TO_DEG), int(theta * RAD_TO_DEG), int(psi * RAD_TO_DEG));
+	return alpha * S + (1 - alpha) * In;
+}
+
+/**
+ * High Pass Filter : Remove low-frequencies
+ * @param alpha : coeff
+ * @param In : input value
+ * @param LIn : last value
+ * @param *S : Last Filtered value
+ */
+float HighPassFilter(float alpha, float In, float LIn, float S)
+{
+	return alpha * (S) + alpha * (In - LIn);
 }

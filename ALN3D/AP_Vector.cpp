@@ -110,12 +110,12 @@ void Vector_Display(Vector_t vector)
 // angle entre U et V
 float Vectors_Angle(fVector_t U, fVector_t V)
 {
-	return acos(constrain((U[X] * V[X] + U[Y] * V[Y] + U[Z] * V[Z]) / (Vector_Magnitude(U) * Vector_Magnitude(V)), -1.0, 1.0));
+	return acos((U[X] * V[X] + U[Y] * V[Y] + U[Z] * V[Z]) / (Vector_Magnitude(U) * Vector_Magnitude(V)));
 }
 
 float Vectors_Angle(Vector_t U, Vector_t V)
 {
-	return acos(constrain((U[X] * V[X] + U[Y] * V[Y] + U[Z] * V[Z]) / (Vector_Magnitude(U) * Vector_Magnitude(V)), -1.0, 1.0));
+	return acos((U[X] * V[X] + U[Y] * V[Y] + U[Z] * V[Z]) / (Vector_Magnitude(U) * Vector_Magnitude(V)));
 }
 
 // angle entre U et V
@@ -131,6 +131,7 @@ void Vector_Copy(fVector_t U, fVector_t V)
 		V[i] = U[i];
 }
 
+// DeltaE = V - U
 float Vector_Error_Sum(fVector_t U, fVector_t V)
 {
 	float s = 0.0;

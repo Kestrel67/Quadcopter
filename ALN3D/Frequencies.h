@@ -34,6 +34,9 @@
 #define FREQUENCY_50Hz 		20 			// 50 calls / 1 sec
 
 #define FREQUENCY_100Hz 	10 			// 100 calls / 1 sec
+#define FREQUENCY_125Hz		8			// 125 calls / 1 sec
+#define FREQUENCY_142Hz		7			// 142 calls / 1 sec
+#define FREQUENCY_167Hz		6			// 167 calls / 1 sec
 #define FREQUENCY_200Hz 	5 			// 200 calls / 1 sec
 #define FREQUENCY_250Hz 	4 			// 250 calls / 1sec
 #define FREQUENCY_333Hz 	3 			// 333.33 calls / 1sec
@@ -83,11 +86,11 @@
 /**
  * Fréquences utiles :
  */
+#if SYSTEM_FREQUENCIES_MODE == SYSTEM_NORMAL_FREQUENCIES // NORMAL
+
 #define FREQUENCY_SEQUENCER_TIMER		FREQUENCY_1000Hz	// Timer principale
 
 #define FREQUENCY_DYNAMIC				FREQUENCY_50Hz		// acquisition, intégration, matrice de rotation, angles, etc...
-
-#define FREQUENCY_STABILIZATION			FREQUENCY_25Hz		// stabilisation
 
 #define FREQUENCY_GET_HMC5883L			FREQUENCY_10Hz		// Acquisition valeurs HMC-5883L
 #define FREQUENCY_SAMPLE_HC_SR04		FREQUENCY_2Hz		// Acquisition de l'altitude
@@ -95,7 +98,8 @@
 #define FREQUENCY_SERIAL_OBSERVER		FREQUENCY_25Hz 		// serial données entrantes
 #define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes // FREQUENCY_5Hz
 
-#define FREQUENCY_CPU_ANALYSER			FREQUENCY_10Hz		// Analyse système
+#define FREQUENCY_ANALYSER				FREQUENCY_10Hz		// Analyse système
+#define FREQUENCY_MANAGER				FREQUENCY_1Hz		// Manager système
 
 #define FREQUENCY_PID_ROLL_PITCH		FREQUENCY_25Hz		// 50Hz --> 25Hz
 #define FREQUENCY_PID_PITCH				FREQUENCY_PID_ROLL_PITCH	// pitch
@@ -106,4 +110,59 @@
 
 #define FREQUENCY_LED_POSITION			FREQUENCY_25Hz		// 24 Hz min
 
+
+
+#elif SYSTEM_FREQUENCIES_MODE == SYSTEM_DEV_FREQUENCIES
+
+#define FREQUENCY_SEQUENCER_TIMER		FREQUENCY_1000Hz	// Timer principale
+
+#define FREQUENCY_DYNAMIC				FREQUENCY_100Hz		// acquisition, intégration, matrice de rotation, angles, etc...
+
+#define FREQUENCY_GET_HMC5883L			FREQUENCY_10Hz		// Acquisition valeurs HMC-5883L
+#define FREQUENCY_SAMPLE_HC_SR04		FREQUENCY_2Hz		// Acquisition de l'altitude
+
+#define FREQUENCY_SERIAL_OBSERVER		FREQUENCY_25Hz 		// serial données entrantes
+#define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes // FREQUENCY_5Hz
+
+#define FREQUENCY_ANALYSER				FREQUENCY_10Hz		// Analyse système
+#define FREQUENCY_MANAGER				FREQUENCY_1Hz		// Manager système
+
+#define FREQUENCY_PID_ROLL_PITCH		FREQUENCY_25Hz		// 50Hz --> 25Hz
+#define FREQUENCY_PID_PITCH				FREQUENCY_PID_ROLL_PITCH	// pitch
+#define FREQUENCY_PID_ROLL				FREQUENCY_PID_ROLL_PITCH	// roll
+#define FREQUENCY_PID_YAW				FREQUENCY_25Hz		// 25Hz --> 10Hz
+
+#define FREQUENCY_PID_ALTITUDE			FREQUENCY_2Hz		// max 2Hz
+
+#define FREQUENCY_LED_POSITION			FREQUENCY_25Hz		// 24 Hz min
+
+
+
+#elif SYSTEM_FREQUENCIES_MODE == SYSTEM_FAST_FREQUENCIES // FAST
+
+#define FREQUENCY_SEQUENCER_TIMER		FREQUENCY_1000Hz	// Timer principale
+
+#define FREQUENCY_DYNAMIC				FREQUENCY_250Hz		// acquisition, intégration, matrice de rotation, angles, etc...
+
+#define FREQUENCY_GET_HMC5883L			FREQUENCY_200Hz		// Acquisition valeurs HMC-5883L
+#define FREQUENCY_SAMPLE_HC_SR04		FREQUENCY_2Hz		// Acquisition de l'altitude
+
+#define FREQUENCY_SERIAL_OBSERVER		FREQUENCY_100Hz 		// serial données entrantes
+#define FREQUENCY_SERIAL_DATA_OUT		FREQUENCY_5Hz		// serial : données sortantes // FREQUENCY_5Hz
+
+#define FREQUENCY_ANALYSER				FREQUENCY_20Hz		// Analyse système
+#define FREQUENCY_MANAGER				FREQUENCY_1Hz		// Manager système
+
+#define FREQUENCY_PID_ROLL_PITCH		FREQUENCY_200Hz		// 50Hz --> 25Hz
+#define FREQUENCY_PID_PITCH				FREQUENCY_PID_ROLL_PITCH	// pitch
+#define FREQUENCY_PID_ROLL				FREQUENCY_PID_ROLL_PITCH	// roll
+#define FREQUENCY_PID_YAW				FREQUENCY_50Hz		// 25Hz --> 10Hz
+
+#define FREQUENCY_PID_ALTITUDE			FREQUENCY_50Hz		// max 2Hz
+
+#define FREQUENCY_LED_POSITION			FREQUENCY_100Hz		// 24 Hz min
+
 #endif
+
+
+#endif // header

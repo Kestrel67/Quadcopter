@@ -12,6 +12,7 @@
 #define EVENT_ANALYSER			MAX_EVENTS - 3 	// Analyseur
 #define EVENT_PULSE_GENERATING 	MAX_EVENTS - 4	// HC-SR04 Pulse generating
 #define EVENT_HC_SR04_SAMPLE 	MAX_EVENTS - 5	// HC-SR04 trigger/sample du HC-SR04
+#define EVENT_MANAGER			MAX_EVENTS - 6
 
 #define EVENT_DYNAMIC				0	// Accel, Gyro, angles, normalize
 #define EVENT_AZIMUT				1	// Magn, corrections

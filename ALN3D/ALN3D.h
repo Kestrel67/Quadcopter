@@ -24,6 +24,8 @@
 #ifndef ALN3D_h
 #define ALN3D_h
 
+// https://github.com/TKJElectronics
+
 
 // IMU
 #define IMU_MODE_NORMAL		1
@@ -35,23 +37,34 @@
 // filters
 #define KALMAN_FILTER 1	// filtre de kalman
 #define COMPLEMENTARY_FILTER 2 // complementary filter
-#define PROBABILISTIC_FILTER 3 // complementary filter
+#define PROBABILISTIC_FILTER 3 // probabilistic filter
 
-#define IMU_FILTER PROBABILISTIC_FILTER // filtre // <==============================================================================
+#define IMU_FILTER COMPLEMENTARY_FILTER // filtre // <==============================================================================
 
 
 // command mode
 #define CMD_IN_DEV	1
 #define CMD_IN_PROD	2
-#define CMD_IN_MODE	CMD_IN_DEV
+#define CMD_IN_MODE	CMD_IN_PROD // <==============================================================================
 
 // communication mode
+#define COM_NONE 0
 #define COM_VISUAL 1 // <:--
 #define COM_PYTHON 2
 #define COM_XBEE 3
+#define COM_DEV	4
+#define COM_ANALYSER 5
+#define COM_PROCESSING 6
+#define COM_DEBUG 7
 
 #define COM_MODE COM_PYTHON // <==============================================================================
 
+// fréquences :
+#define SYSTEM_NORMAL_FREQUENCIES 1
+#define SYSTEM_FAST_FREQUENCIES 2
+#define SYSTEM_DEV_FREQUENCIES 3
+
+#define SYSTEM_FREQUENCIES_MODE SYSTEM_DEV_FREQUENCIES
 
 // analyser
 #define ANALYSER 1	// <==============================================================================
@@ -65,7 +78,7 @@
 #define DEBUG_MODE 0	// <==============================================================================
 
 
-// school, home
+// dev, prod board
 #define BOARD1 1
 #define BOARD2 2
 
@@ -73,7 +86,7 @@
 #define ARDUIMU BOARD2
 
 
-// on vérifie qu'une application est active (analyser ou gestion des erreurs)
+// on vérifie qu'une application est active (analyseur, gestion des erreurs ou debug)
 #define enabled_backapp(app) (app == 1)
 
 // informations sur l'auteur
@@ -101,7 +114,7 @@
 #include "CPU.h"
 #include "ArduIMU.h"
 #include "Warning.h"
-#include "Dev.h"
+#include "SerialMessages.h"
 
 #include "Events.h"
 #include "Frequencies.h"
@@ -128,6 +141,9 @@
 #include "AP_Controller.h"
 #include "AP_Python.h"
 
+// move functions
+#include "MoveFunctions.h"
+
 // accel, gyro, magn
 #include <HMC5883L.h>
 #include "MPU6000.h"
@@ -145,11 +161,7 @@
 
 // analyser
 #include "Analyser.h"
+#include "Manager.h"
 
-
-/**
- * informations
- */
-void ALN3D_Author(HardwareSerial *ser = &Serial);
 
 #endif

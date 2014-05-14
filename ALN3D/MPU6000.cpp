@@ -228,9 +228,6 @@ void MPU6000_Gyro_Calibration(void)
 	Omega_Gap[X] = - round(float(sum_x) / MPU6000_CALIBRATION_ITERATIONS);
 	Omega_Gap[Y] = - round(float(sum_y) / MPU6000_CALIBRATION_ITERATIONS);
 	Omega_Gap[Z] = - round(float(sum_z) / MPU6000_CALIBRATION_ITERATIONS);
-
-
-	Vector_Display(Omega_Gap);
 }
 
 void MPU6000_Format(char *buffer)

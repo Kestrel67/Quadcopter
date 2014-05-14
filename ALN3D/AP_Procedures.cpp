@@ -22,7 +22,7 @@ void _proc_dynamic_angles_PID(void)
 	// calculation
 	PitchController.Compute();
 	RollController.Compute();
-	//YawController.Compute();
+	YawController.Compute();
 
 	// DC
 	MotorsThrottle[MA] = altitude_control + phi_control + psi_control;
@@ -68,7 +68,7 @@ void callback_ser_data_in(void)
 
 		// changement altitude
 		case CMD_CHANGE_AVG_THROTTLE:
-			altitude_control = attached_param;
+			altitude_control = attached_param; // 50 -> 205
 			break;
 
 		// coeff Kp pour PID (pitch, roll)
@@ -93,16 +93,15 @@ void callback_ser_data_in(void)
 			break;
 
 		// change pitch setpoint
-		case CMD_PITCH_SETPOINT:
+		case CMD_PITCH_SETPOINT: // 0 : -20°, 255 : + 20°
 			phi_setpoint = attached_param / 255.0 * 40.0 - 20.0;
 			break;
 
 		// change roll setpoint
-		case CMD_ROLL_SETPOINT:
+		case CMD_ROLL_SETPOINT: // 0 : -20°, 255 : + 20°
 			theta_setpoint = attached_param / 255.0 * 40.0 - 20.0;
 			break;
 	}
-
 }
 #else
 
@@ -150,35 +149,36 @@ void _proc_com_out(void)
 		Serial.print(theta * RAD_TO_DEG, 1);
 		Serial.print("\t psi : ");
 		Serial.print(psi * RAD_TO_DEG, 1);
-		Serial.print("\tpitch setpoint : ");
+		Serial.print("\tSETPOINT[PHI, THETA] : [");
 		Serial.print(phi_setpoint);
-		Serial.print("\troll setpoint : ");
+		Serial.print(" : ");
 		Serial.print(theta_setpoint);
-
-		/*
-		Serial.print("\t altitude :");
-		Serial.print(distance);
-		Serial.print("\t");
-		Serial.print("freq : ");
-		Serial.print(system_frequency);
-		Serial.print("\t CPU use : ");
-		Serial.print(CPU_use);
-		*/
-		Serial.print("\t");
+		Serial.print("]\t");
 
 		DisplayMotorsThrottle();
+
+#elif COM_MODE == COM_DEBUG
+
+		ser_display_angles_pid_motors();
+
+#elif COM_MODE == COM_ANALYSER
+
+		ser_display_analyser_data();
 
 #elif COM_MODE == COM_PYTHON
 	  Serial.print(millis() / 1000.0);
 	  Serial.print(";");
-	  Serial.print(phi * RAD_TO_DEG);
+	  Serial.print(Accel[THETA] * RAD_TO_DEG);
 	  Serial.print(";");
 	  Serial.print(theta * RAD_TO_DEG);
 	  Serial.print(";");
-	  Serial.println(gyroscopes_integration_error * RAD_TO_DEG, 3);
-
+	  Serial.println(90);
+#elif COM_MODE == COM_PROCESSING
+	  // nothing
 #elif COM_MODE == COM_XBEE
 	  send_serial_data_xbee(&Serial);
+#elif COM_MODE == COM_DEV
+	  Serial.println(LowPassFilterVal);
 #endif
 }
 
@@ -186,7 +186,7 @@ void _proc_com_out(void)
 void CheckAngles(void)
 {
 	// état d'urgence
-	if (abs(phi_in) > SAFETY_MAX_ANGLE || abs(theta_in) > SAFETY_MAX_ANGLE) {
+	if (abs(phi) > SAFETY_MAX_ANGLE || abs(theta) > SAFETY_MAX_ANGLE) {
 
 		// on met le système en état d'urgence => on coupe les moteurs
 		ChangeSystemStatus(SYS_EMERGENCY);

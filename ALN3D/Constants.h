@@ -17,9 +17,9 @@
 // default gyroscopes drift correction
 #if ARDUIMU == BOARD1
 
-#define GYRO_X_GAP 93
-#define GYRO_Y_GAP 7
-#define GYRO_Z_GAP -8
+#define GYRO_X_GAP 94
+#define GYRO_Y_GAP 8
+#define GYRO_Z_GAP -9
 
 #else
 

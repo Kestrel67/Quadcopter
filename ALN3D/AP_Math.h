@@ -17,6 +17,11 @@
 #define sign(n) (n / abs(n))
 
 /**
+ * On contrain à [-1, +1]
+ */
+#define CT(val) constrain(val, -1.0, +1.0)
+
+/**
  *	Convert the value x from range [min, max] to range [scaleMin, scaleMax]
  *	@param float x : Value to convert
  *	@param float min : from range min boundary
@@ -71,8 +76,21 @@ void Euler_Angles(void);
 float Trig_Correction(float rad);
 
 /**
- *	format Euler Angles
+ * Low Pass Filter : Remove high-frequencies (Smooth)
+ * @param alpha : coeff
+ * @param In : input value
+ * @param S : Last Smoothed value
  */
-void Euler_Angles_Format(char *buffer);
+float LowPassFilter(float alpha, float In, float S);
+
+/**
+ * High Pass Filter : Remove low-frequencies
+ * @param alpha : coeff
+ * @param In : input value
+ * @param LIn : last value
+ * @param S : Last Filtered value
+ */
+float HighPassFilter(float alpha, float In, float LIn, float S);
+
 
 #endif

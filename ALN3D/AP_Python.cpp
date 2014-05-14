@@ -86,5 +86,7 @@ void Python_MatPlotLib_Angles(void)
 	Serial.print(";");
 	Serial.print(phi * RAD_TO_DEG);
 	Serial.print(";");
-	Serial.println(theta * RAD_TO_DEG);
+	Serial.print(theta * RAD_TO_DEG);
+	Serial.print(";");
+	Serial.println(psi * RAD_TO_DEG);
 }

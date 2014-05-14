@@ -121,7 +121,7 @@ bool QuadPID::Compute(void)
 	// terme dérivé
 	float deltaInput = (input - LastInput) / dt;
 
-	// commande
+	// commande : (eq.18)
 	*Output = Kp * epsilon + Iterm - deltaInput * Kd; // c(t) = Kp * err(t) + Ki * integ[0, t) (err(t) * DT) + Kd * Derr(t) / DT
 	*Output = constrain(*Output, OutMin, OutMax);
 

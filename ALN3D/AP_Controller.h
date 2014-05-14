@@ -67,6 +67,11 @@ void PID_Manual(void);
 void PID_Automatic(void);
 
 /**
+ * Information PID
+ */
+void PIDinformation(void);
+
+/**
  * On affiche les ocmmandes PID
  */
 void DisplayPIDControl(HardwareSerial *ser = &Serial);

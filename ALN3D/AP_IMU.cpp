@@ -8,11 +8,17 @@
 
 fVector_t Omega;	// angular velocity			(rad.s^-1)
 fVector_t IOmega;	// angle from last mesure 	(rad)
+fVector_t LastOmega; // last angular velocity	(rad.s^-1)
+fVector_t FilteredOmega; // filtered angular velocity (rad.s^-1)
+float HighPassFilterVal = GYRO_HIGHPASSFILTER_VAL;	// valeur du coeeficient du HPF
+float OmegaMagnitude; // magnitude of the current angular velocity (rad.s^-1)
 
 fVector_t Accel;	// acceleration				(m.s^-2)
 fVector_t LastAccel;// last acceleration		(m.s^-2)
 fVector_t NormalizedAccel;	// acceleration ||a|| = 1	(m.s^-2 / 9.81)
 fVector_t SmoothedAccel;	// filtered acceleration	(m.s^-2)
+float LowPassFilterVal = ACCEL_LOWPASSFILTER_VAL;	// valeur du coefficient du HPF
+float AccelerationMagnitude; // magnitude of the current acceleration (m.s^-2)
 
 fVector_t Magn;		// scaled		(mG)
 fVector_t Magn_Row; // notscaled	(mG)
@@ -34,8 +40,13 @@ fVector_t GyroAngles;	// angles directs issent des gyroscopes
 Angle_t phi;	// pitch (tanguage) (rad)
 Angle_t theta;	// roll (roulis)	(rad)
 Angle_t psi;	// yaw (lacet)		(rad)
+Angle_t delta;	// angle global de l'assiette (rad)
 
 Angle_t CDelta; // angle de la dernière rotation
+
+float qfilter; // filtre d'utilisation des gyroscopes
+
+fMatrix_t GlobalRotMat = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 
 void IMU_Init(bool calibrate)
 {
@@ -50,16 +61,12 @@ void IMU_Init(bool calibrate)
 	Apply_Accelerometers_Angles();
 
 	// angles issuent des accéléromètres
-	AccelAngles[PHI] = asin(-NormalizedAccel[X]), AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
+	AccelAngles[PHI] = asin(-NormalizedAccel[X]);
+	AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
 
+	// acceleration angles
 	phi = AccelAngles[PHI];
 	theta = AccelAngles[THETA];
-
-// kalman filter
-#if IMU_FILTER == KALMAN_FILTER
-	KalmanPhi.setAngle(phi * RAD_TO_DEG);
-	KalmanTheta.setAngle(theta * RAD_TO_DEG);
-#endif
 
 	// magnétomèters, azimut, ...
 
@@ -67,6 +74,7 @@ void IMU_Init(bool calibrate)
 	LastIMUExecution = micros();	// last integ time
 }
 
+// 50Hz; 100Hz; 200Hz
 void IMUExecution(void)
 {
 	// dt
@@ -77,14 +85,82 @@ void IMUExecution(void)
 	MPU6000_Read();	// data in
 	MPU6000_Corrections_Scale(); // scale
 	Gyroscopes_Integration(dt);	// integration
-	Normalize(dt); // normalization
+	DynamicRotations(); // on calcul les rotations avec les gyroscopes
+
+#if IMU_MODE == IMU_MODE_NORMAL
+	// on normalise / corrige
+	Normalize(dt);
+#endif
+
+	// calcul des angles
+	phi = asin(-Gravity[X]);
+	theta = asin(-Gravity[Y]);
+	psi = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
+
+	// angle global (eq.5a)
+	Angle_t tan_phi = tan(phi);
+	Angle_t tan_theta = tan(theta);
+
+	delta = atan(sqrt(tan_phi * tan_phi + tan_theta * tan_theta));
+}
+
+void Normalize(float dt)
+{
+	/***** LISSAGE ACCELEROMETRES *****/
+	LowPassFilterVal = FILTER_COEFFICIENT(ACCEL_TIME_CONSTANT, dt);
+
+	// eq.11 : low pass filter (vibrations)
+	for (uint8_t i = 0; i < 3; i++)
+		Accel[i] = SmoothedAccel[i] = LowPassFilter(LowPassFilterVal, Accel[i], SmoothedAccel[i]);
+
+	Vector_Normalize(Accel, NormalizedAccel);
+
+
+	/**** NORMES *****/
+	AccelerationMagnitude = Vector_Magnitude(Accel);
+	OmegaMagnitude = Vector_Magnitude(Omega);
+
+
+	/**** EN MODE FULL GYRO *****/
+	if (OmegaMagnitude > MAX_OMEGA_VELOCITY || AccelerationMagnitude > MAX_ACCEL_ACCELERATION) return;
+
+
+	/**** ANGLE ACCEL, GYRO *****/
+	AccelAngles[PHI] = asin(-NormalizedAccel[X]);
+	AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
+	GyroAngles[PHI] = asin(-Gravity[X]);
+	GyroAngles[THETA] = asin(-Gravity[Y]);
+
+
+	/**** FILTRE COMPLEMENTAIRE *****/
+	// eq.13 : complementary filter
+	qfilter = COMPLEMENTARY_FILTER_VAL; // HIGH COEFF
+
+	phi = qfilter * GyroAngles[PHI]+ (1 - qfilter) * AccelAngles[PHI];
+	theta = qfilter * GyroAngles[THETA]+ (1 - qfilter) * AccelAngles[THETA];
+
+	// update integ_error
+	gyroscopes_integration_error *= qfilter;
+
+
+	/**** RECONSTRUCTION DU VECTEUR GRAVITE *****/
+	// lacet
+	psi = GyroAngles[PSI] = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
+
+	// (eq.16)
+	Gravity[X] = -sin(phi);
+	Gravity[Y] = -sin(theta);
+	Gravity[Z] = /* COEFF !! (-1) */ (sign(Gravity[Z]) /* ! */) * sqrt(CT(1 - Gravity[X] * Gravity[X] - Gravity[Y] * Gravity[Y]));
+
+	// on conserve le vecteur gravité
+	Vector_Copy(Gravity, LastGravity);
 }
 
 void Apply_Accelerometers_Angles(void)
 {
 	Vector_Normalize(Accel, NormalizedAccel);
 
-	// on suppose : le drone subit un mouvement rectiligne uniforme ou est immobile
+	// on suppose : full accel
 	Gravity[X] = NormalizedAccel[X];
 	Gravity[Y] = NormalizedAccel[Y];
 	Gravity[Z] = NormalizedAccel[Z];
@@ -92,6 +168,9 @@ void Apply_Accelerometers_Angles(void)
 
 void Gyroscopes_Integration(float dt)
 {
+	// on filtre les gyroscopes
+	//FilterGyroscopes(dt);
+
 	// eq.1 : intégration
 	IOmega[X] += Omega[X] * dt; // dt = integration period
 	IOmega[Y] += Omega[Y] * dt;
@@ -101,7 +180,7 @@ void Gyroscopes_Integration(float dt)
 	gyroscopes_integration_error += GYRO_INTEGRATION_ERROR / 180.0 * PI * dt;
 }
 
-void Normalize(float dt)
+void DynamicRotations(void)
 {
 	// on met à jour la matrice de rotation
 	update_rotation_matrix(IOmega[Y], IOmega[X], IOmega[Z]);
@@ -115,89 +194,26 @@ void Normalize(float dt)
 
 	// on normalize le vecteur de gravité
 	Vector_Normalize(Gravity, Gravity);
+}
 
-#if IMU_MODE == IMU_MODE_NORMAL
+void FilterGyroscopes(float dt)
+{
+	// filter val
+	HighPassFilterVal = 0.9999;	// FILTER_COEFFICIENT(GYRO_TIME_CONSTANT, dt)
 
 	// eq.11 : low pass filter on accelerometer data (to filter vibrations)
-	SmoothedAccel[X] = (Accel[X] * (1 - LOWPASSFILTER_VAL)) + (SmoothedAccel[X] * LOWPASSFILTER_VAL);
-	SmoothedAccel[Y] = (Accel[Y] * (1 - LOWPASSFILTER_VAL)) + (SmoothedAccel[Y] * LOWPASSFILTER_VAL);
-	SmoothedAccel[Z] = (Accel[Z] * (1 - LOWPASSFILTER_VAL)) + (SmoothedAccel[Z] * LOWPASSFILTER_VAL);
-
-	// on sauvegarde la dernière accélération (dt)
-	Vector_Copy(SmoothedAccel, Accel);
-	Vector_Normalize(SmoothedAccel, NormalizedAccel);
-
-#if IMU_FILTER == COMPLEMENTARY_FILTER || IMU_FILTER == PROBABILISTIC_FILTER // Complementary Filter
-
-	//angles globaux issuent des gyroscopes
-	GyroAngles[PHI] = asin(-Gravity[X]), GyroAngles[THETA] = asin(-Gravity[Y]);
-#endif
-
-
-	// angles globaux issuent des accéléromètres
-	AccelAngles[PHI] = asin(-NormalizedAccel[X]), AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
-
-
-#if IMU_FILTER == KALMAN_FILTER // Kalman : (eqsl.12) données en (°)
-
-	float Kalphi = AccelAngles[PHI] * RAD_TO_DEG;
-	float Kaltheta = AccelAngles[THETA] * RAD_TO_DEG;
-
-	// dernières valeurs de phi et theta
-	float oldtheta = theta, oldphi = phi;
-
-	phi = KalmanPhi.getAngle(Kalphi, Omega[Y] /* * cos(oldtheta) */ * RAD_TO_DEG, dt) / RAD_TO_DEG;
-	theta = KalmanTheta.getAngle(Kaltheta, Omega[X] /* * cos(oldphi) */ * RAD_TO_DEG, dt) / RAD_TO_DEG;
-
-
-#elif IMU_FILTER == COMPLEMENTARY_FILTER
-	// eq.13 : complementary filter
-	float CF_Filter = COMPLEMENTARY_FILTER_VAL; // HIGH COEFF
-
-	// GravityDeltaAngle[PHI]
-	phi = CF_Filter * (GyroAngles[PHI] /*+ Omega[Y] * dt*/) + (1 - CF_Filter) * AccelAngles[PHI];
-	theta = CF_Filter * (GyroAngles[THETA] /*+ Omega[X] * dt*/) + (1 - CF_Filter) * AccelAngles[THETA];
-
-#else
-	// eq.10 : filtre probabiliste
-	float ProbabilisticFilter =
-			1 - (	+1.0 * acos(constrain((Matrix_Trace(RotMat) + 1.0) / 2.0, -1.0, 1.0)) * RAD_TO_DEG // angle global
-					+1.0 * abs(GRAVITY - Vector_Magnitude(Accel))	// norme du vecteur accélération
-					+0.3 * abs(GyroAngles[PHI] - AccelAngles[PHI]) * RAD_TO_DEG	// angle relatif phi
-					+0.3 * abs(GyroAngles[THETA] - AccelAngles[THETA]) * RAD_TO_DEG // angle relatif theta
-			);
-
-	// constrain + min val
-	ProbabilisticFilter = constrain(ProbabilisticFilter, 0.0, 1 - PROBABILISTIC_FILTER_MIN_VAL) + PROBABILISTIC_FILTER_MIN_VAL;
-
-	// application
-	phi = ProbabilisticFilter * (AccelAngles[PHI]) + (1 - ProbabilisticFilter) * GyroAngles[PHI];
-	theta = ProbabilisticFilter * (AccelAngles[THETA]) + (1 - ProbabilisticFilter) * GyroAngles[THETA];
-#endif
-
-	// calcul de l'angle de lacet
-	psi = GyroAngles[PSI] = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
-
-	// on met à jour le vecteur de gravité virtuel
-	Gravity[X] = -sin(phi);
-	Gravity[Y] = -sin(theta);
-	Gravity[Z] = -cos(phi) * cos(theta);
-
-	// on garde l'ancien vecteur gravité
-	Vector_Copy(Gravity, LastGravity);
-
-#else
-	// full GYRO
-	phi = asin(-Gravity[X]);
-	theta = asin(-Gravity[Y]);
-	psi = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
-#endif
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		FilteredOmega[i] = HighPassFilter(HighPassFilterVal, Omega[i], LastOmega[i], FilteredOmega[i]);
+		LastOmega[i] = Omega[i];
+		Omega[i] = FilteredOmega[i];
+	}
 }
 
 // on met à jour les leds de position
 void update_position_leds(void)
 {
-	if (abs(phi * RAD_TO_DEG) < CORRECT_PITCH_ROLL_ANGLES && abs(theta * RAD_TO_DEG) < CORRECT_PITCH_ROLL_ANGLES)
+	if (abs(phi) < CORRECT_PITCH_ROLL_ANGLES && abs(theta) < CORRECT_PITCH_ROLL_ANGLES)
 	{
 	  digitalWrite(EMBEDED_LED_BLUE, HIGH);
 	  digitalWrite(EMBEDED_LED_RED, LOW);

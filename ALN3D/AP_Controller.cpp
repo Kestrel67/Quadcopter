@@ -61,7 +61,7 @@ void PID_Init(void)
 	/* ? */
 
 	/** setpoints **/
-	phi_setpoint, theta_setpoint, psi_setpoint = 0;
+	phi_setpoint = theta_setpoint = psi_setpoint = 0;
 
 	psi_control = 0;
 	altitude_control = 50;
@@ -94,7 +94,7 @@ void PIDCompute(void)
 {
 	PitchController.Compute();
 	RollController.Compute();
-	//YawController.Compute();
+	YawController.Compute();
 	//AltitudeController.Compute();
 
 	MotorsThrottle[MA] = altitude_control + phi_control + psi_control;	// (eq.9a)
@@ -104,6 +104,14 @@ void PIDCompute(void)
 	MotorsThrottle[MD] = altitude_control - theta_control - psi_control; // (eq.9d)
 }
 
+// information PID
+void PIDinformation(void)
+{
+	PitchController.info();
+	RollController.info();
+	YawController.info();
+	AltitudeController.info();
+}
 
 // on affiche les commandes PID
 void DisplayPIDControl(HardwareSerial *ser)

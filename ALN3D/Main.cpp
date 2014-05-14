@@ -8,7 +8,7 @@
 
 byte system_status = SYS_PAUSE; // on / off
 
-void system_setup(bool author, bool synchronization, bool calibrate)
+void system_setup(bool conf, bool synchronization, bool calibrate, bool analyser, bool manager)
 {
 	// on mesure la durée d'initialisation
 	setup_start();
@@ -25,22 +25,10 @@ void system_setup(bool author, bool synchronization, bool calibrate)
 
 	MPU6000_Init(&Master);	// accel, gyro
 	HMC5883L_Init();		// magn
-	initialize_hc_sr04(PWM0, FREQUENCY_SAMPLE_HC_SR04, EVENT_PID_ALTITUDE);	// altitude
-
-	PID_Init();
-	PID_Manual();	// default
-
-	set_CPU_analyser(FREQUENCY_CPU_ANALYSER);	// system analyser
-
-	// serial command (com in) observer
-	#if CMD_IN_MODE == CMD_IN_PROD
-	set_serial_observer(FREQUENCY_SERIAL_OBSERVER, EVENT_SERIAL_DATA_IN);
-	#else
-	add_timer(EVENT_SERIAL_DATA_IN, FREQUENCY_SERIAL_OBSERVER);
-	#endif
 
 	// events
 	register_event(EVENT_DYNAMIC, 			_proc_dynamic_calculation);
+	register_event(EVENT_HMC5883L, 			HMC5883L_Read);
 	register_event(EVENT_PID_ROLL_PITCH, 	_proc_dynamic_angles_PID);
 	register_event(EVENT_PID_ALTITUDE, 		callback_pid_altitude);
 	register_event(EVENT_SERIAL_DATA_IN, 	callback_ser_data_in);
@@ -52,13 +40,31 @@ void system_setup(bool author, bool synchronization, bool calibrate)
 	add_timer(EVENT_PID_ROLL_PITCH, 	FREQUENCY_PID_ROLL_PITCH);
 	add_timer(EVENT_SERIAL_DATA_OUT, 	FREQUENCY_SERIAL_DATA_OUT);
 	add_timer(EVENT_LED_POSITION, 		FREQUENCY_LED_POSITION);
+	add_timer(EVENT_HMC5883L, 			FREQUENCY_GET_HMC5883L);
+
+	// first event
+	initialize_hc_sr04(PWM0, FREQUENCY_SAMPLE_HC_SR04, EVENT_PID_ALTITUDE);	// altitude
+
+	PID_Init();
+	PID_Manual();	// default
+
+	// analyser / manager
+	if (analyser)
+	{
+		set_CPU_Analyser(FREQUENCY_ANALYSER);	// system analyser
+
+		if (manager)	set_CPU_Manager(FREQUENCY_MANAGER);		// system manager
+	}
+
+	// serial command (com in) observer
+	#if CMD_IN_MODE == CMD_IN_PROD
+	set_serial_observer(FREQUENCY_SERIAL_OBSERVER, EVENT_SERIAL_DATA_IN);
+	#else
+	add_timer(EVENT_SERIAL_DATA_IN, FREQUENCY_SERIAL_OBSERVER);
+	#endif
 
 	// calibration des gyroscopes, accéléromètres
 	IMU_Init(calibrate);
-
-	// auteur
-	if (author)
-		ALN3D_Author();
 
 	// synchronisation SPI
 	if (synchronization)
@@ -70,10 +76,15 @@ void system_setup(bool author, bool synchronization, bool calibrate)
 	// état initial des moteurs
 	ApplyMotorsThrottle();
 
+	// auteur
+	if (conf)
+		ser_display_IMU_conf();
+
 	// red led
 	digitalWrite(EMBEDED_LED_RED, LOW);
 
-	initialize_timers(FREQUENCY_SEQUENCER_TIMER);	// MSTimer 2 : 1000Hz (last function)
+	// MSTimer 2 : 1000Hz (last function)
+	initialize_timers(FREQUENCY_SEQUENCER_TIMER);
 
 	// init end
 	setup_stop();
