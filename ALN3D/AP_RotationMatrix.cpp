@@ -10,7 +10,7 @@ fMatrix_t RotMat;
 
 void update_rotation_matrix(float phi, float theta, float psi)
 {
-	// voir doc (...)
+	// voir doc (QuadConv p7)
 
 	// phi
 	float cos_phi = cos(phi); // optimisations

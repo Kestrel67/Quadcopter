@@ -6,7 +6,7 @@
 
 /**
  * Autres capteurs
- * @need : 1EVENT, 1TIMER
+ * @need : 1 EVENT, 1 TIMER
  */
 
 #ifndef Sensors_h

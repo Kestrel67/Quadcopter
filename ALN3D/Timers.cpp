@@ -27,7 +27,7 @@ bool getTimersError(void)
 // ajoute un timer
 SSigned_t add_timer(Event_t e, MilliSec_t timeout, bool enable, bool one_time)
 {
-	if (timers_overflow)
+	if (timers_overflow || timeout == 0)
 		return -1;
 		
 	if (timer_pointer < MAX_TIMERS && !timers_overflow)

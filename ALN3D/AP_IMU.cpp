@@ -31,8 +31,6 @@ fVector_t VirtualAzimut = {1.0, 0.0, 0.0};	// virtual Azimut vector
 Angle_t gyroscopes_integration_error;	// sum(i, t) [ DELTAgyro * dTau ]
 LongMicroSec_t LastIMUExecution;		// IMU last calculation
 
-Kalman KalmanPhi, KalmanTheta; // filtres de Kalman
-
 fVector_t AccelAngles;	// angles directs issuent des accéléromètres
 fVector_t GyroAngles;	// angles directs issent des gyroscopes
 
@@ -42,17 +40,13 @@ Angle_t theta;	// roll (roulis)	(rad)
 Angle_t psi;	// yaw (lacet)		(rad)
 Angle_t delta;	// angle global de l'assiette (rad)
 
-Angle_t CDelta; // angle de la dernière rotation
-
 float qfilter; // filtre d'utilisation des gyroscopes
 
-fMatrix_t GlobalRotMat = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+fMatrix_t GlobalRotMat = {{1.0, 0, 0}, {0, 1.0, 0}, {0, 0, 1.0}};
 
 void IMU_Init(bool calibrate)
 {
-	// the drone is supposed to be stable
-
-	// calibration gyroscopes, accelerometers
+	// stable
 	if (calibrate)	MPU6000_Gyro_Calibration();
 	MPU6000_Read();
 	MPU6000_Corrections_Scale();
@@ -60,11 +54,9 @@ void IMU_Init(bool calibrate)
 	// apply acceleration
 	Apply_Accelerometers_Angles();
 
-	// angles issuent des accéléromètres
 	AccelAngles[PHI] = asin(-NormalizedAccel[X]);
 	AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
 
-	// acceleration angles
 	phi = AccelAngles[PHI];
 	theta = AccelAngles[THETA];
 
@@ -87,21 +79,31 @@ void IMUExecution(void)
 	Gyroscopes_Integration(dt);	// integration
 	DynamicRotations(); // on calcul les rotations avec les gyroscopes
 
+#if IMU_MODE_BOTH == IMU_MODE
+	/***** LISSAGE ACCELEROMETRES *****/
+	LowPassFilterVal = FILTER_COEFFICIENT(ACCEL_TIME_CONSTANT, dt); // FILTER_COEFFICIENT(ACCEL_TIME_CONSTANT, dt);
+
+	// eq.11 : low pass filter (vibrations)
+	for (uint8_t i = 0; i < 3; i++)
+		Accel[i] = SmoothedAccel[i] = LowPassFilter(LowPassFilterVal, Accel[i], SmoothedAccel[i]);
+
+	Vector_Normalize(Accel, NormalizedAccel);
+	PhiThetaFromGravity(NormalizedAccel, AccelAngles);
+#endif
+
+
 #if IMU_MODE == IMU_MODE_NORMAL
 	// on normalise / corrige
 	Normalize(dt);
+#else
+	// calcul des angles (full-precision mode)
+	PhiThetaFromGravity(Gravity, GyroAngles);
+
+	phi = GyroAngles[PHI];
+	theta = GyroAngles[THETA];
 #endif
 
-	// calcul des angles
-	phi = asin(-Gravity[X]);
-	theta = asin(-Gravity[Y]);
 	psi = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
-
-	// angle global (eq.5a)
-	Angle_t tan_phi = tan(phi);
-	Angle_t tan_theta = tan(theta);
-
-	delta = atan(sqrt(tan_phi * tan_phi + tan_theta * tan_theta));
 }
 
 void Normalize(float dt)
@@ -115,22 +117,20 @@ void Normalize(float dt)
 
 	Vector_Normalize(Accel, NormalizedAccel);
 
-
 	/**** NORMES *****/
 	AccelerationMagnitude = Vector_Magnitude(Accel);
 	OmegaMagnitude = Vector_Magnitude(Omega);
 
-
 	/**** EN MODE FULL GYRO *****/
-	if (OmegaMagnitude > MAX_OMEGA_VELOCITY || AccelerationMagnitude > MAX_ACCEL_ACCELERATION) return;
-
+	if (OmegaMagnitude > MAX_OMEGA_VELOCITY || AccelerationMagnitude > MAX_ACCEL_ACCELERATION)
+	{
+		PhiThetaFromGravity(Gravity, &phi, &theta);
+		return;
+	}
 
 	/**** ANGLE ACCEL, GYRO *****/
-	AccelAngles[PHI] = asin(-NormalizedAccel[X]);
-	AccelAngles[THETA] = asin(-NormalizedAccel[Y]);
-	GyroAngles[PHI] = asin(-Gravity[X]);
-	GyroAngles[THETA] = asin(-Gravity[Y]);
-
+	PhiThetaFromGravity(NormalizedAccel, AccelAngles);
+	PhiThetaFromGravity(Gravity, GyroAngles);
 
 	/**** FILTRE COMPLEMENTAIRE *****/
 	// eq.13 : complementary filter
@@ -142,15 +142,8 @@ void Normalize(float dt)
 	// update integ_error
 	gyroscopes_integration_error *= qfilter;
 
-
 	/**** RECONSTRUCTION DU VECTEUR GRAVITE *****/
-	// lacet
-	psi = GyroAngles[PSI] = atan2(VirtualAzimut[Y], VirtualAzimut[X]);
-
-	// (eq.16)
-	Gravity[X] = -sin(phi);
-	Gravity[Y] = -sin(theta);
-	Gravity[Z] = /* COEFF !! (-1) */ (sign(Gravity[Z]) /* ! */) * sqrt(CT(1 - Gravity[X] * Gravity[X] - Gravity[Y] * Gravity[Y]));
+	RebuildGravity(Gravity, phi, theta); // eq.16
 
 	// on conserve le vecteur gravité
 	Vector_Copy(Gravity, LastGravity);
@@ -160,10 +153,8 @@ void Apply_Accelerometers_Angles(void)
 {
 	Vector_Normalize(Accel, NormalizedAccel);
 
-	// on suppose : full accel
-	Gravity[X] = NormalizedAccel[X];
-	Gravity[Y] = NormalizedAccel[Y];
-	Gravity[Z] = NormalizedAccel[Z];
+	// full accel
+	Vector_Copy(NormalizedAccel, Gravity);
 }
 
 void Gyroscopes_Integration(float dt)
@@ -192,14 +183,19 @@ void DynamicRotations(void)
 	apply_rotation_matrix(Gravity);
 	apply_rotation_matrix(VirtualAzimut);
 
+// calcul de la matrice de rotation globale
+#if IMU_MODE == IMU_MODE_FULL_GYRO
+	Matrix_Multiply(GlobalRotMat, RotMat, GlobalRotMat);
+#endif
+
 	// on normalize le vecteur de gravité
-	Vector_Normalize(Gravity, Gravity);
+	Vector_Normalize(Gravity);
 }
 
 void FilterGyroscopes(float dt)
 {
 	// filter val
-	HighPassFilterVal = 0.9999;	// FILTER_COEFFICIENT(GYRO_TIME_CONSTANT, dt)
+	HighPassFilterVal = 0.999;	// FILTER_COEFFICIENT(GYRO_TIME_CONSTANT, dt)
 
 	// eq.11 : low pass filter on accelerometer data (to filter vibrations)
 	for (uint8_t i = 0; i < 3; i++)

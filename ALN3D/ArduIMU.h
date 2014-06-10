@@ -26,7 +26,6 @@
 /**
  * pin PWM
  */
-
 #define PWM0 9 // trigger pin (HC-SR04)
 #define PWM1 10 // SS pin (SPI)
 
@@ -38,7 +37,7 @@
 #define HC_SR04_PULSE_PIN 		D8
 
 /**
- * virtual AP motors pin
+ * virtual AP motor pin
  */
 #define MA 0
 #define MB 1

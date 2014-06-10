@@ -161,7 +161,6 @@ Event_t event_dequeue(void)
 // analyse des évènements
 #if enabled_backapp(ANALYSER)
 
-		// event_processed
 		events_processed++;
 
 #endif

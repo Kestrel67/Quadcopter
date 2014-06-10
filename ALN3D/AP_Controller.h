@@ -7,11 +7,12 @@
 #ifndef AP_CONTROLLER_H_
 #define AP_CONTROLLER_H_
 
+// à 25HZ !!!
 // 1.1, 	1.0, 	0.6 		(1.3), X,  X
 // 1.75 	0.5 	0.45
-#define KP 1.0
-#define KI 0.6 // 0.5
-#define KD 0.3
+#define KP 0.5
+#define KI 0.5 // 0.5
+#define KD 0.5
 
 #define PID_IDX_LIMIT_MIN 0
 #define PID_IDX_LIMIT_MAX 1

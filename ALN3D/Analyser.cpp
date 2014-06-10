@@ -70,10 +70,4 @@ void CPU_Analyser(void)
 	CPU_use = 100.0 * busy_time / period;
 
 	busy_time = 0;
-
-	// contraite (%)
-	/*
-	if (CPU_use > 100)
-		CPU_use = 100.0;
-	*/
 }

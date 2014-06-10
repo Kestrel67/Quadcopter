@@ -19,6 +19,18 @@ void ser_display_IMU_conf(HardwareSerial *ser = &Serial);
 // affichage de la conf du quad
 void ser_display_IMU_conf_old(HardwareSerial *ser);
 
+// com visual
+void PreConfCOMVisual(void);
+
+// python
+void PreConfCOMPython(void);
+
+// processing
+void PreConfCOMProcessing(void);
+
+// python setpoint PID angle
+void PreConfCOMPythonPID(void);
+
 // informations
 void ALN3D_Author(HardwareSerial *ser = &Serial);
 

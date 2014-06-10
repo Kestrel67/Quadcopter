@@ -95,10 +95,10 @@ void hc_sr04_callback(unsigned int counter, uint8_t over)
 	if (over)
 		distance = 0;
 
-	// sinon on calcule la distance en mm qui sépare le module du drone
+	// distance = c * accuracy
 	else
 		// distance en mm
-		distance = counter * timer1_precision * 0.000170 - INIT_ALTITUDE;
+		distance = counter * timer1_accuracy * 0.000170 - INIT_ALTITUDE;
 
 		// altitude en m
 		Altitude = distance / 1000.0;

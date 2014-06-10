@@ -26,9 +26,6 @@ B      O |_ _ _ _ _\ x
      y
 */
 
-
-
-
 /**
  * Angle Vector access index
  */

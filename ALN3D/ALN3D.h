@@ -30,22 +30,14 @@
 // IMU
 #define IMU_MODE_NORMAL		1
 #define IMU_MODE_FULL_GYRO  2
+#define IMU_MODE_BOTH		3
 
 #define IMU_MODE IMU_MODE_NORMAL // <==============================================================================
-
-
-// filters
-#define KALMAN_FILTER 1	// filtre de kalman
-#define COMPLEMENTARY_FILTER 2 // complementary filter
-#define PROBABILISTIC_FILTER 3 // probabilistic filter
-
-#define IMU_FILTER COMPLEMENTARY_FILTER // filtre // <==============================================================================
-
 
 // command mode
 #define CMD_IN_DEV	1
 #define CMD_IN_PROD	2
-#define CMD_IN_MODE	CMD_IN_PROD // <==============================================================================
+#define CMD_IN_MODE	CMD_IN_DEV // <==============================================================================
 
 // communication mode
 #define COM_NONE 0
@@ -57,7 +49,7 @@
 #define COM_PROCESSING 6
 #define COM_DEBUG 7
 
-#define COM_MODE COM_PYTHON // <==============================================================================
+#define COM_MODE COM_DEV // <==============================================================================
 
 // fréquences :
 #define SYSTEM_NORMAL_FREQUENCIES 1
@@ -82,8 +74,7 @@
 #define BOARD1 1
 #define BOARD2 2
 
-
-#define ARDUIMU BOARD2
+#define ARDUIMU BOARD2	// <==============================================================================
 
 
 // on vérifie qu'une application est active (analyseur, gestion des erreurs ou debug)
@@ -130,14 +121,13 @@
 #include "Communication.h"
 
 // maths / physic
-#include "Kalman.h"
 #include "AP_Math.h"
 #include "AP_Vector.h"
 #include "AP_Matrix.h"
 #include "AP_RotationMatrix.h"
-#include "AP_PID.h"
+#include "AP_QuadPID.h"
 #include "AP_IMU.h"
-#include "AP_Procedures.h"
+#include "AP_Callbacks.h"
 #include "AP_Controller.h"
 #include "AP_Python.h"
 
@@ -157,6 +147,7 @@
 #include "Motors.h"
 
 // programme principal
+#include "Abstract.h"
 #include "Main.h"
 
 // analyser

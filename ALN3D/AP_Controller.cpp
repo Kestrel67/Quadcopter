@@ -50,20 +50,11 @@ void PID_Init(void)
 	AltitudeController.SetDirection(QUADPID_DIRECT);
 	AltitudeController.SetOutputLimits(AltitudeLimits[PID_IDX_LIMIT_MIN], AltitudeLimits[PID_IDX_LIMIT_MAX]);
 
-	// infos
-	/* ? */
-	/*
-	PitchController.info();
-	RollController.info();
-	YawController.info();
-	AltitudeController.info();
-	*/
-	/* ? */
-
 	/** setpoints **/
-	phi_setpoint = theta_setpoint = psi_setpoint = 0;
+	phi_setpoint = theta_setpoint = psi_setpoint = 0.0;
 
-	psi_control = 0;
+	// default control
+	psi_control = 0.0;
 	altitude_control = 50;
 }
 
@@ -87,21 +78,6 @@ void PID_Automatic(void)
 	RollController.SetMode(QUADPID_AUTOMATIC);
 	YawController.SetMode(QUADPID_AUTOMATIC);
 	AltitudeController.SetMode(QUADPID_AUTOMATIC);
-}
-
-// application aux moteurs
-void PIDCompute(void)
-{
-	PitchController.Compute();
-	RollController.Compute();
-	YawController.Compute();
-	//AltitudeController.Compute();
-
-	MotorsThrottle[MA] = altitude_control + phi_control + psi_control;	// (eq.9a)
-	MotorsThrottle[MB] = altitude_control - phi_control + psi_control; // (eq.9b)
-
-	MotorsThrottle[MC] = altitude_control + theta_control - psi_control; // (eq.9c)
-	MotorsThrottle[MD] = altitude_control - theta_control - psi_control; // (eq.9d)
 }
 
 // information PID

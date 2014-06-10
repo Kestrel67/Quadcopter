@@ -14,33 +14,32 @@ Pin_t AP_select_pin;
 
 void AP_synchronization(void)
 {
-	// tant qu'il n'y a aucune réponse
+	// tant qu'il n'y a aucune réponse de l'esclave
 	while(AP_read(APL_REG_STATUS) == SYS_UNDEFINED)
 	{
-		// led effects
+		// led effect
 		digitalWrite(EMBEDED_LED_RED, !digitalRead(EMBEDED_LED_RED));
 		delay(50);
 	}
-	AP_write(APL_REG_STATUS, SYS_PAUSE); // on met le système en pause
+	AP_write(APL_REG_STATUS, SYS_PAUSE); // pause
 
-	// on éteint la led
 	digitalWrite(EMBEDED_LED_RED, LOW);
 }
 
 // initialisation
 void AP_init(SPIMaster *Master, Pin_t select_pin)
 {
-	// on met en place le pin
+	// select pin
 	AP_select_pin = select_pin;
 
-	// on informe le maitre de l'arrivé d'un nouveau esclave
+	// SPIMaster class
 	Master->addSlave(select_pin);
 }
 
 bool AP_write(Reg_t reg, byte value)
 {
 	if (reg >= APL_MAX_REGISTERS_MAX_VALUE)
-		return false; // erreur, registre inexistant
+		return false; // erreur, registre inexistant (non utilisé)
 
 	// trigger on
 	digitalWrite(AP_select_pin, LOW);
@@ -62,7 +61,6 @@ bool AP_write(Reg_t reg, byte value)
 	// trigger off
 	digitalWrite(AP_select_pin, HIGH);
 
-	// si le message a bien été transmit
 	return true;
 }
 
@@ -97,6 +95,8 @@ byte AP_read(Reg_t reg)
 /********************/
 
 Tiny_t serial_observer_timer;
+
+HardwareSerial *serial_listener_obj = &Serial;
 
 Command_t current_cmd;
 
@@ -147,13 +147,13 @@ void send_serial_command(Command_t cmd, Parameter_t param, HardwareSerial *seria
 void serial_observer(void)
 {
 	// on met à jour la taille du buffer
-	serial_buffer_size = Serial.available();
+	serial_buffer_size = serial_listener_obj->available();
 
 	// s'il y a une donnée à traiter
 	if (serial_buffer_size >= 1)
 	{
 		// on récupère l'octet
-		byte data = Serial.read();
+		byte data = serial_listener_obj->read();
 
 		// si c'est une commande
 		if (data >> 7)
@@ -203,46 +203,32 @@ void send_serial_data_xbee(HardwareSerial *ser)
 {
 	byte buffer[60];
 
-	// angles
-	unsigned int fphi = (phi + PI) / (2*PI) * 65535;
-	unsigned int ftheta = (theta + PI) /  (2*PI) * 65535;
-	unsigned int fpsi = (psi + PI) /  (2*PI) * 65535;
+	// angles / décode: (((b1 << 8) | b2) / 65536.0) * (2*PI) - PI) * 180 / PI);
+	unsigned int fphi = round((phi + PI) / (2 * PI) * 65536);
+	unsigned int ftheta = round((theta + PI) /  (2 * PI) * 65536);
+	unsigned int fpsi = round((psi + PI) /  (2 * PI) * 65536);
 
-	// altitude
-	unsigned int faltitude = Altitude / 5.0 * 65535;
-
-	// checksum
-	byte checksum = 0;
+	// altitude / décode : ((b1 << 8) | b2) * 5.0 / 65536
+	unsigned int faltitude = round(Altitude / 5.0 * 65536);
 
 	// cursor
 	uint8_t i = 0;
-
-	// start
-	buffer[i++] = ';';
 
 	// phi
 	buffer[i++] = fphi >> 8;
 	buffer[i++] = fphi;
 
-	checksum ^= fphi;
-
 	// theta
 	buffer[i++] = ftheta >> 8;
 	buffer[i++] = ftheta;
-
-	checksum ^= ftheta;
 
 	// psi
 	buffer[i++] = fpsi >> 8;
 	buffer[i++] = fpsi;
 
-	checksum ^= fpsi;
-
 	// altitude
 	buffer[i++] = faltitude >> 8;
 	buffer[i++] = faltitude;
-
-	checksum ^= faltitude;
 
 	// motors
 	buffer[i++] = MotorsThrottle[MA];
@@ -255,23 +241,15 @@ void send_serial_data_xbee(HardwareSerial *ser)
 	buffer[i++] = system_frequency >> 8;
 	buffer[i++] = system_frequency;
 
-	checksum ^= system_frequency;
-
 	// cpu_use
 	buffer[i++] = byte(CPU_use);
-
-	checksum ^= byte(CPU_use);
 
 	// cmd received, sended
 	buffer[i++] = received_commands >> 8;
 	buffer[i++] = received_commands;
 
-	checksum ^= received_commands;
-
 	buffer[i++] = sended_answers >> 8;
 	buffer[i++] = sended_answers;
-
-	checksum ^= sended_answers;
 
 	// events
 	buffer[i++] = events_thrown >> 24;
@@ -279,38 +257,23 @@ void send_serial_data_xbee(HardwareSerial *ser)
 	buffer[i++] = events_thrown >> 8;
 	buffer[i++] = events_thrown;
 
-	checksum ^= events_thrown;
-
 	// timers
 	buffer[i++] = timers_expired >> 24;
 	buffer[i++] = timers_expired >> 16;
 	buffer[i++] = timers_expired >> 8;
 	buffer[i++] = timers_expired;
 
-	checksum ^= timers_expired;
-
 	// events_overflows
 	buffer[i++] = analyser_events_overflow >> 8;
 	buffer[i++] = analyser_events_overflow;
 
-	checksum ^= analyser_events_overflow;
-
-	// warning
-	buffer[i++] = warning_level;
-
-	checksum ^= warning_level;
-
-	// mu : ratio = matrix update / accel corrections
-	buffer[i++] = 0;
-	buffer[i++] = 0;
-
-	checksum ^= 0;
-
 	// communication status
 	buffer[i++] = communication_status;
 
-	// check sum
-	buffer[i++] = 128;
+	// end sequence
+	buffer[i++] = '\n';
+	buffer[i++] = '\n';
+	buffer[i++] = '\n';
 
 	// on envoie
 	for (uint8_t j = 0; j < i; j++)

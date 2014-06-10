@@ -23,10 +23,4 @@ void system_setup(bool conf = true, bool synchronization = true, bool calibrate 
  */
 void system_loop();
 
-/**
- * on change l'état du système
- */
-void ChangeSystemStatus(byte status = SYS_PAUSE);
-
-
 #endif

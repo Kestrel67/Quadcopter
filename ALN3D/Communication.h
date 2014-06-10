@@ -16,7 +16,7 @@
 #define Communication_h
 
 
-#define MSB(b) (b >> 7) // récupère le Most Significant Bit d'un octet (8bits)
+#define MSB(b) (b >> 7) // récupère le MSB d'un octet (8bits)
 #define LSBS(b) (b & (~(1<<7))) // Récupère le reste de l'octet (les LSBs) (8bits)
 #define SERIAL_BUFFER_MAX_SIZE 64 // Taille du buffer de la communication série, 64 octets
 
@@ -76,6 +76,11 @@ byte AP_read(Reg_t reg);
  *	ID du timer pour la fonction d'écoute du serial
  */
 extern Tiny_t serial_observer_timer;
+
+/**
+ *	Objet de com série
+ */
+extern HardwareSerial *serial_listener_obj;
 
 /**
  *	Période d'appel du serial listener

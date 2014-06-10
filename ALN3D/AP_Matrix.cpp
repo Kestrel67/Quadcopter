@@ -86,9 +86,7 @@ void Vector_Apply_Matrix(fMatrix_t M, fVector_t V)
 
 	Vector_Apply_Matrix(M, V, op);
 
-	V[X] = op[X];
-	V[Y] = op[Y];
-	V[Z] = op[Z];
+	Vector_Copy(op, V);
 }
 
 // Serial.print(M) (float)

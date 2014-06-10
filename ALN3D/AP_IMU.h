@@ -12,7 +12,7 @@
 // [0.85 -> 0.94] a = tau / (tau + dt) <=> Tau = a * dt / (1 - a)
 #define ACCEL_TIME_CONSTANT				0.072
 #define GYRO_TIME_CONSTANT				0.036
-#define ACCEL_LOWPASSFILTER_VAL 		FILTER_COEFFICIENT(ACCEL_TIME_CONSTANT, FREQUENCY_DYNAMIC / 1000.0)
+#define ACCEL_LOWPASSFILTER_VAL 		0.878 //FILTER_COEFFICIENT(ACCEL_TIME_CONSTANT, FREQUENCY_DYNAMIC / 1000.0)
 #define GYRO_HIGHPASSFILTER_VAL 		0.995 		// [->] a = tau / (tau + dt) <=> rc = tau = dt * a / (1 - a)
 
 #define FILTER_COEFFICIENT(TIME_CONSTANT, DT) (TIME_CONSTANT / (TIME_CONSTANT + float(DT)))
@@ -24,7 +24,7 @@
 #define MAX_OMEGA_VELOCITY				0.5				// rad.s^-1
 #define MAX_ACCEL_ACCELERATION			2.0 * GRAVITY	// m.s^-2
 
-#define SAFETY_MAX_ANGLE 25 / RAD_TO_DEG 				// angle maximale avant arrêt d'urgence
+#define SAFETY_MAX_ANGLE 80 / RAD_TO_DEG 				// angle maximale avant arrêt d'urgence
 #define CORRECT_PITCH_ROLL_ANGLES	10 / RAD_TO_DEG 	// angles stable
 
 extern fVector_t Omega;					// angular velocity			(rad.s^-1)
@@ -52,8 +52,6 @@ extern fVector_t VirtualAzimut;			// virtual Azimut vector
 extern Angle_t gyroscopes_integration_error;	// sum(i, t) [ DELTAgyro * dTau ]
 extern LongMicroSec_t LastIMUExecution;			// IMU last calculation
 
-extern Kalman KalmanPhi, KalmanTheta; 			// filtres de Kalman
-
 extern fVector_t AccelAngles;			// angles directs issuent des accéléromètres
 extern fVector_t GyroAngles;			// angles directs issent des gyroscopes
 
@@ -61,9 +59,7 @@ extern fVector_t GyroAngles;			// angles directs issent des gyroscopes
 extern Angle_t phi;						// pitch (tanguage) (rad)
 extern Angle_t theta;					// roll (roulis)	(rad)
 extern Angle_t psi;						// yaw (lacet)		(rad)
-extern Angle_t delta;	// angle global de l'assiette (rad)
-
-extern Angle_t CDelta; 					// angle de la dernière rotation
+extern Angle_t delta;					// angle global de l'assiette (rad)
 
 extern float qfilter; // filtre d'utilisation des gyroscopes
 

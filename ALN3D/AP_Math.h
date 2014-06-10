@@ -58,16 +58,11 @@ Angle_t calculate_global_angle(Angle_t phi, Angle_t theta);
  *	Calculate Euler angles from accelerometers
  *	save angles in phi, theta, psi
  *
- *	phi : angle between the pitch axis and the plan (orthogonal to gravity vector)
- *	theta : angle between the roll axis and the plan (orthogonal to gravity vector)
- *	psi : angle between the yaw axis and the plan (orthogonal to gravity vector)
+ *	(*phi) : angle between the pitch axis and the plan (orthogonal to gravity vector)
+ *	(*theta) : angle between the roll axis and the plan (orthogonal to gravity vector)
+ *	(*psi) : angle between the yaw axis and the plan (orthogonal to gravity vector)
  */
-void Euler_Angles(void);
-
-
-/************************/
-/***** FORMATING ********/
-/************************/
+void Euler_Angles(float *phi, float *theta, float *psi);
 
 /**
  *	If a value in radians is smaller than zero, it'll just add 2 PI for getting a positive value
@@ -92,5 +87,19 @@ float LowPassFilter(float alpha, float In, float S);
  */
 float HighPassFilter(float alpha, float In, float LIn, float S);
 
+/**
+ * On calcul l'angle phi et theta en fonction de la gravité
+ * @param fVector_t g : gravity vector
+ * @param fVector_t anglesArray : phi, theta, psi
+ */
+void PhiThetaFromGravity(fVector_t g, fVector_t anglesArray);
+void PhiThetaFromGravity(fVector_t g, float *phi, float *theta);
+
+/**
+ * Reconstruction gravité
+ * @param fVector_t g : gravity vector
+ * @param *phi, *theta : angles
+ */
+void RebuildGravity(fVector_t g, float phi, float theta);
 
 #endif

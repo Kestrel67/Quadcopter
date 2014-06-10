@@ -120,6 +120,74 @@ void ser_display_IMU_conf_old(HardwareSerial *ser)
 }
 */
 
+
+// visual
+void PreConfCOMVisual(void)
+{
+	Serial.print(system_status);
+	Serial.print("  phi : ");
+	Serial.print(phi * RAD_TO_DEG, 1);
+	Serial.print("\t theta : ");
+	Serial.print(theta * RAD_TO_DEG, 1);
+	//Serial.print("\t psi : ");
+	//Serial.print(psi * RAD_TO_DEG, 1);
+	Serial.print("\tSET[");
+	Serial.print(phi_setpoint);
+	Serial.print(" : ");
+	Serial.print(theta_setpoint);
+	Serial.print("]  ");
+
+	Serial.print("PID:");
+	Serial.print(KpPitch, 2);
+	Serial.print(" ");
+	Serial.print(KiPitch, 2);
+	Serial.print(" ");
+	Serial.print(KdPitch, 2);
+	Serial.print("\t");
+
+	Serial.print(CPU_use);
+	Serial.print("% \t");
+	Serial.print(analyser_events_overflow);
+	Serial.print("\t");
+
+
+	DisplayMotorsThrottle();
+}
+
+// python
+void PreConfCOMPython(void)
+{
+	Serial.print(millis() / 1000.0);
+	Serial.print(";");
+	Serial.print(phi * RAD_TO_DEG);
+	Serial.print(";");
+	Serial.print(theta * RAD_TO_DEG);
+	Serial.print(";");
+	Serial.println(psi * RAD_TO_DEG);
+}
+
+// precessing
+void PreConfCOMProcessing(void)
+{
+	Serial.print(phi, 4);
+	Serial.print(";");
+	Serial.print(theta, 4);
+	Serial.print(";");
+	Serial.println(psi, 4);
+}
+
+// python setpoing angle
+void PreConfCOMPythonPID(void)
+{
+	Serial.print(millis() / 1000.0);
+	Serial.print(";");
+	Serial.print(theta * RAD_TO_DEG); // angle
+	Serial.print(";");
+	Serial.print(theta_setpoint * RAD_TO_DEG); // setpoint
+	Serial.print(";");
+	Serial.println(90);	// nothing
+}
+
 /**
  * informations
  */

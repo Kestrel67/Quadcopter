@@ -1,0 +1,172 @@
+/**
+ * @author : Dietrich Lucas (Kestrel)
+ * @email : lucas.dietrich.pro@gmail.com
+ * @website http://www.kestrel.fr
+ */
+
+#include <ALN3D.h>
+
+byte com_out_mode = 0;
+
+void _proc_dynamic_calculation(void)
+{
+	IMUExecution();
+	CheckAngles();
+}
+
+void _proc_dynamic_angles_PID(void)
+{
+	// input
+	phi_in = phi * RAD_TO_DEG;
+	theta_in = theta * RAD_TO_DEG;
+	psi_in = psi * RAD_TO_DEG;
+
+	// calculation
+	PitchController.Compute();
+	RollController.Compute();
+	//YawController.Compute();
+
+	// Motors, calculate, constrain, apply
+	UpdateMotorsThrottle();
+}
+
+void callback_pid_altitude(void)
+{
+	// Altitude
+	// system status
+
+	//AltitudeController.Compute();
+	return;
+}
+
+#if CMD_IN_MODE == CMD_IN_PROD
+void callback_ser_data_in(void)
+{
+	// current_cmd
+	// attached_param
+
+	switch (current_cmd)
+	{
+		// changement état du système
+		case CMD_CHANGE_STATUS:
+			ChangeSystemStatus(attached_param);
+			break;
+
+		// urgence
+		case CMD_STOP:
+		case CMD_WARN_EMERGENCY:
+			ChangeSystemStatus(SYS_EMERGENCY);
+			break;
+
+		// changement altitude
+		case CMD_CHANGE_AVG_THROTTLE:
+			altitude_control = attached_param; // 50 -> 205
+			UpdateMotorsThrottle();
+			break;
+
+		// start PID
+		case CMD_PID_MODE:
+			if (attached_param == 1 /* tmp */ and system_status == SYS_ON)
+				PID_Automatic();
+			else
+				PID_Manual();
+			break;
+
+#define PIDCOMINMULT 100.0
+			
+		// coeff Kp pour PID (pitch, roll)
+		case CMD_CHANGE_PR_KP:
+			KpPitch = KpRoll = attached_param / PIDCOMINMULT;
+			PitchController.SetTunings(KpPitch, KiPitch, KdPitch);
+			RollController.SetTunings(KpRoll, KiRoll, KdRoll);
+			break;
+
+		// coeff Ki pour PID (pitch, roll)
+		case CMD_CHANGE_PR_KI:
+			KiPitch = KiRoll = attached_param / PIDCOMINMULT;
+			PitchController.SetTunings(KpPitch, KiPitch, KdPitch);
+			RollController.SetTunings(KpRoll, KiRoll, KdRoll);
+			break;
+
+		// coeff Kd pour PID (pitch, roll)
+		case CMD_CHANGE_PR_KD:
+			KdPitch = KdRoll = attached_param / PIDCOMINMULT;
+			PitchController.SetTunings(KpPitch, KiPitch, KdPitch);
+			RollController.SetTunings(KpRoll, KiRoll, KdRoll);
+			break;
+
+		// pitch setpoint
+		case CMD_PITCH_SETPOINT: // 0 : -20°, 255 : + 20°
+			phi_setpoint = attached_param / 255.0 * 80.0 - 40.0;
+			break;
+
+		// roll setpoint
+		case CMD_ROLL_SETPOINT: // 0 : -20°, 255 : + 20°
+			theta_setpoint = attached_param / 255.0 * 80.0 - 40.0;
+			break;
+
+		// com out
+		case CMD_COM_OUT_MODE:
+			com_out_mode = attached_param;
+			break;
+
+	}
+}
+#else
+
+// DEV
+void callback_ser_data_in(void)
+{
+	if (Serial.available() > 0)
+	{
+		byte b1 = Serial.read();
+
+		switch (b1)
+		{
+		// start
+		case 'a':
+			ChangeSystemStatus(SYS_ON);
+			Serial.print("[started]");
+			break;
+
+		// pause
+		case 'z':
+			ChangeSystemStatus(SYS_PAUSE);
+			Serial.print("[stopped]");
+			break;
+
+		// emergency stop
+		case 'e':
+			ChangeSystemStatus(SYS_EMERGENCY);
+			Serial.print("[EMERGENCY!!]");
+			break;
+		}
+	}
+}
+
+#endif
+
+void _proc_com_out(void)
+{
+#if	COM_MODE == COM_VISUAL
+	PreConfCOMVisual();
+#elif COM_MODE == COM_DEBUG
+	ser_display_angles_pid_motors();
+#elif COM_MODE == COM_ANALYSER
+	ser_display_analyser_data();
+#elif COM_MODE == COM_PYTHON
+	PreConfCOMPython();
+#elif COM_MODE == COM_PROCESSING
+	PreConfCOMProcessing();
+#elif COM_MODE == COM_XBEE
+	send_serial_data_xbee(&Serial);
+#elif COM_MODE == COM_DEV
+		Serial.print(millis() / 1000.0);
+		Serial.print(";");
+		Serial.print(theta * RAD_TO_DEG);
+		Serial.print(";");
+		Serial.print(phi * RAD_TO_DEG);
+		Serial.print(";");
+		Serial.println(psi * RAD_TO_DEG);
+#endif
+}

@@ -94,11 +94,17 @@
 // on change le status
 #define CMD_CHANGE_STATUS		B101010
 
+// PID mode (1 or 0)
+#define CMD_PID_MODE			B110000
+
+// com out mode
+#define CMD_COM_OUT_MODE		B110001
+
 // ...
 #define CMD_PARAM_SYS_UNDEFINED 	0 // status indéfini
 #define CMD_PARAM_SYS_CONFIG 		1 // système en mode configuration
-#define CMD_PARAM_SYS_ON 			2 // système en fonctionnement normal
+#define CMD_PARAM_SYS_ON			2 // système en fonctionnement normal
 #define CMD_PARAM_SYS_PAUSE 		3 // système en pause
 #define CMD_PARAM_SYS_EMERGENCY 	4 // système en état d'urgence
 
-#endif /* Commands_h */
+#endif

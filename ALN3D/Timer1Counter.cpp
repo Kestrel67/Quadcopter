@@ -8,7 +8,7 @@
 
 byte timer1_prescale_bits;
 
-unsigned long timer1_precision;
+unsigned long timer1_accuracy;
 
 uint8_t timer1_overflows;
 
@@ -53,7 +53,7 @@ void set_timer1_counter(byte prescale, EndCaptureCallback_t callback)
 	}
 
 	// timer counter precision
-	timer1_precision = prescaler * pow(10, 9) / F_CPU;
+	timer1_accuracy = prescaler * pow(10, 9) / F_CPU;
 
 	// normal counter mode
 	TCCR1A = 0;
@@ -106,7 +106,7 @@ void timer1_capture_interrupt(void)
 
 LongMicroSec_t timer1_calculate_duration(unsigned int counter, uint8_t overflow)
 {
-	return ((counter + overflow * 65536) * timer1_precision) / 1000;
+	return ((counter + overflow * 65536) * timer1_accuracy) / 1000;
 }
 
 // Timer 1 interrupt vector

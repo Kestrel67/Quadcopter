@@ -28,4 +28,4 @@ extern unsigned int warning_errors;
  */
 void new_error(void);
 
-#endif /* Warning_h */
+#endif

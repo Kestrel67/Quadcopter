@@ -8,6 +8,17 @@
 #define Constants_h
 
 /**
+ * System
+ */
+#define SYS_UNDEFINED 	0 // status indéfini
+#define SYS_CONFIG 		1 // système en mode configuration
+#define SYS_ON 			2 // système en fonctionnement normal
+#define SYS_PAUSE 		3 // système en pause
+#define SYS_EMERGENCY 	4 // système en état d'urgence
+
+
+
+/**
  * MPU6000 Calibration
  */
 #define MPU6000_CALIBRATION_START_DELAY 100	// delai avant la calibration (en ms)

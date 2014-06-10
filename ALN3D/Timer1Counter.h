@@ -14,11 +14,11 @@
 
 #define TIMER1_PIN_CAPTURE 8
 
-#define TIMER1_NO_PRESCALE 0b1
-#define TIMER1_PRESCALE_8 0b10
-#define TIMER1_PRESCALE_64 0b11
-#define TIMER1_PRESCALE_256 0b100
-#define TIMER1_PRESCALE_1024 0b101
+#define TIMER1_NO_PRESCALE 			0b0001
+#define TIMER1_PRESCALE_8 			0b0010
+#define TIMER1_PRESCALE_64 			0b0011
+#define TIMER1_PRESCALE_256 		0b0100
+#define TIMER1_PRESCALE_1024 		0b0101
 
 /**
  * type de la callback à appelée à la fin de la capture
@@ -35,7 +35,7 @@ extern byte timer1_prescale_bits;
 /**
  * précision de la capture
  */
-extern unsigned long timer1_precision;
+extern unsigned long timer1_accuracy;
 
 /**
  * nombre de fois que le timer est passé en overflow

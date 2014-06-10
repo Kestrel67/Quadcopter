@@ -33,4 +33,4 @@ void apply_rotation_matrix(fVector_t V);
  */
 void apply_rotation_matrix(CoordinateSystem_t rep);
 
-#endif /* ROTATIONMATRIX_H_ */
+#endif

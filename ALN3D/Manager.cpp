@@ -21,11 +21,11 @@ void set_CPU_Manager(MilliSec_t period)
  */
 void CPU_Manager(void)
 {
-	return;
+	return; // tmp
 
 	Manager_Debug();
 
-	// si le processeur est quasiment totalement occupé
+	// si le processeur est quasiment ou totalement occupé
 
 	if (CPU_use > 98.0)
 	{

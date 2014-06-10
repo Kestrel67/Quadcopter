@@ -19,7 +19,7 @@ typedef uint8_t Pin_t;
 typedef uint8_t DutyCycle_t;
 
 /**
- * Rapport cyclique étendus pour éviter les erreurs
+ * Rapport cyclique étendus pour éviter les overflow
  */
 typedef int iDutyCycle_t;
 
@@ -114,7 +114,7 @@ typedef float fPercentage_t;
 typedef uint8_t Reg_t;
 
 /**
- * Vecteur de nombres à virgules
+ * Vecteur de nombres à virgule
  */
 typedef float fVector_t[3];
 
@@ -124,7 +124,7 @@ typedef float fVector_t[3];
 typedef int Vector_t[3];
 
 /**
- * Matrice de nombres à virgules
+ * Matrice de nombres à virgul
  */
 typedef float fMatrix_t[3][3];
 
@@ -138,8 +138,8 @@ typedef int Matrix_t[3][3];
  */
 struct CoordinateSystem_s {
 	fVector_t x ;
-	fVector_t y;
-	fVector_t z;
+	fVector_t y; // x * y = 0
+	fVector_t z; // z = (k) * (x /\ y)
 };
 
 /**
@@ -168,4 +168,9 @@ typedef float Distance_t;
 typedef float Angle_t;
 
 
-#endif /* Types_h */
+/**
+ *	Extern timer1Ccounter
+ */
+/** typedef void (*EndCaptureCallback_t)(unsigned int, uint8_t); **/
+
+#endif
